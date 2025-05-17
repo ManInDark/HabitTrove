@@ -43,6 +43,7 @@ export default function CoinsManager() {
   const highlightId = searchParams.get('highlight')
   const userIdFromQuery = searchParams.get('user') // Get user ID from query
   const transactionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const PAGE_ENTRY_COUNTS = [10, 50, 100, 500];
 
   // Effect to set selected user from query param if admin
   useEffect(() => {
@@ -237,9 +238,7 @@ export default function CoinsManager() {
                       setCurrentPage(1) // Reset to first page when changing page size
                     }}
                   >
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                    <option value={500}>500</option>
+                    {PAGE_ENTRY_COUNTS.map(n => <option key={n} value={n}>{n}</option>)}
                   </select>
                   <span className="text-sm text-muted-foreground">entries</span>
                 </div>
@@ -275,6 +274,7 @@ export default function CoinsManager() {
                       }
 
                       const isHighlighted = transaction.id === highlightId;
+                      const transactionUser = usersData.users.find(u => u.id === transaction.userId);
                       return (
                         <div
                           key={transaction.id}
@@ -304,12 +304,12 @@ export default function CoinsManager() {
                               {transaction.userId && currentUser?.isAdmin && (
                                 <Avatar className="h-6 w-6">
                                   <AvatarImage
-                                    src={usersData.users.find(u => u.id === transaction.userId)?.avatarPath ?
-                                      `/api/avatars/${usersData.users.find(u => u.id === transaction.userId)?.avatarPath?.split('/').pop()}` : undefined}
-                                    alt={usersData.users.find(u => u.id === transaction.userId)?.username}
+                                    src={transactionUser?.avatarPath ?
+                                      `/api/avatars/${transactionUser?.avatarPath?.split('/').pop()}` : undefined}
+                                    alt={transactionUser?.username}
                                   />
                                   <AvatarFallback>
-                                    {usersData.users.find(u => u.id === transaction.userId)?.username?.[0] || '?'}
+                                    {transactionUser?.username?.[0] || '?'}
                                   </AvatarFallback>
                                 </Avatar>
                               )}
