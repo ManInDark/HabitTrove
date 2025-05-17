@@ -124,15 +124,10 @@ export default function HabitList() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">
-          {isTasksView ? 'My Tasks' : 'My Habits'}
-        </h1>
+        <h1 className="text-3xl font-bold">{`My ${isTasksView ? "Tasks" : "Habits"}`}</h1>
         <span>
-          <Button className="mr-2" onClick={() => setModalConfig({ isOpen: true, isTask: true })}>
-            <Plus className="mr-2 h-4 w-4" /> {'Add Task'}
-          </Button>
-          <Button onClick={() => setModalConfig({ isOpen: true, isTask: false })}>
-            <Plus className="mr-2 h-4 w-4" /> {'Add Habit'}
+          <Button onClick={() => setModalConfig({ isOpen: true, isTask: isTasksView })}>
+            <Plus className='mr-2 h-4 w-4' />{`Add ${isTasksView ? "Task" : "Habit"}`}
           </Button>
         </span>
       </div>
