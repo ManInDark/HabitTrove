@@ -40,8 +40,8 @@ export default function HabitCalendar() {
   }, [completedHabitsMap, settings.system.timezone])
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <h1 className="text-2xl font-semibold mb-6">Habit Calendar</h1>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Habit Calendar</h1>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
