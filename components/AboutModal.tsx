@@ -56,11 +56,13 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
               >
                 @dohsimpson
               </a>
+              <br/>
+              Fork by <a href="https://github.com/ManInDark" target="_blank" rel="noopener noreferrer" className="font-medium hover:underline">@ManInDark</a>
             </div>
 
             <div className="flex justify-center">
               <a
-                href="https://github.com/dohsimpson/habittrove"
+                href="https://github.com/ManInDark/HabitTrove"
                 target="_blank"
                 rel="noopener noreferrer"
               >

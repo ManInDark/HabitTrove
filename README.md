@@ -22,11 +22,8 @@ Want to try HabitTrove before installing? Visit the public [demo instance](https
 ## Usage
 
 1. **Creating Habits**: Click the "Add Habit" button to create a new habit. Set a name, description, and coin reward.
-
 2. **Tracking Habits**: Mark habits as complete on your dashboard. Each completion earns you the specified coins.
-
 3. **Wishlist**: Add rewards to your wishlist that you can redeem with earned coins.
-
 4. **Statistics**: View your progress through the heatmap and streak counters.
 
 ## Docker Deployment
@@ -63,7 +60,7 @@ docker run -d \
   -v ./data:/app/data \
   -v ./backups:/app/backups \ # Add this line to map the backups directory
   -e AUTH_SECRET=$AUTH_SECRET \
-  dohsimpson/habittrove
+  ghcr.io/manindark/habittrove
 ```
 
 Available image tags:
@@ -110,7 +107,7 @@ To contribute to HabitTrove, you'll need to set up a development environment. He
 1. Clone the repository and navigate to the project directory:
 
 ```bash
-git clone https://github.com/dohsimpson/habittrove.git
+git clone https://github.com/ManInDark/HabitTrove.git
 cd habittrove
 ```
 
@@ -163,7 +160,7 @@ Run these commands regularly during development to catch issues early.
 
 ## Contributing
 
-We welcome feature requests and bug reports! Please [open an issue](https://github.com/dohsimpson/habittrove/issues/new). We do not accept pull request at the moment.
+We welcome feature requests and bug reports! Please [open an issue](https://github.com/ManInDark/habittrove/issues/new).
 
 ## License
 
