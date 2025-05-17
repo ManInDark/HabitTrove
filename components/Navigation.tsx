@@ -8,6 +8,7 @@ import { Calendar, Coins, Gift, Home } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import AboutModal from './AboutModal'
+import { usePathname } from 'next/navigation'
 
 type ViewPort = 'main' | 'mobile'
 
@@ -35,6 +36,8 @@ export default function Navigation({ className, viewPort }: NavigationProps) {
   const [browserSettings] = useAtom(browserSettingsAtom)
   const isTasksView = browserSettings.viewType === 'tasks'
   const { isIOS } = useHelpers()
+  const pathname = usePathname();
+  console.log(pathname, pathname === navItems(false)[1].href)
 
   useEffect(() => {
     const handleResize = () => {
@@ -61,7 +64,11 @@ export default function Navigation({ className, viewPort }: NavigationProps) {
               <Link
                 key={item.label}
                 href={item.href}
-                className="flex flex-col items-center justify-center py-2 text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
+                className={"flex flex-col items-center py-2 hover:text-blue-600 dark:hover:text-blue-300 " +
+                  (pathname === (item.href) ?
+                    "text-blue-500 dark:text-blue-500" :
+                    "text-gray-300 dark:text-gray-300")
+                }
               >
                 <item.icon className="h-6 w-6" />
                 <span className="text-xs mt-1">{item.label}</span>
@@ -85,9 +92,12 @@ export default function Navigation({ className, viewPort }: NavigationProps) {
                   <Link
                     key={item.label}
                     href={item.href}
-                    className="group flex items-center px-2 py-2 text-sm leading-6 font-medium rounded-md text-gray-300 hover:text-white hover:bg-gray-700"
+                    className={"flex items-center px-2 py-2 font-medium rounded-md " +
+                      (pathname === (item.href) ?
+                        "text-blue-500 hover:text-blue-600 hover:bg-gray-700" :
+                        "text-gray-300 hover:text-white hover:bg-gray-700")}
                   >
-                    <item.icon className="mr-4 flex-shrink-0 h-6 w-6 text-gray-400" aria-hidden="true" />
+                    <item.icon className="mr-4 flex-shrink-0 h-6 w-6" aria-hidden="true" />
                     {item.label}
                   </Link>
                 ))}
