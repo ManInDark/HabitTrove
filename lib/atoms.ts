@@ -22,19 +22,16 @@ import {
   getDefaultSettings,
   getDefaultUsersData,
   getDefaultWishlistData,
-  Habit,
-  ViewType
+  Habit
 } from "./types";
 
 export interface BrowserSettings {
-  viewType: ViewType
   expandedHabits: boolean
   expandedTasks: boolean
   expandedWishlist: boolean
 }
 
 export const browserSettingsAtom = atomWithStorage('browserSettings', {
-  viewType: 'habits',
   expandedHabits: false,
   expandedTasks: false,
   expandedWishlist: false

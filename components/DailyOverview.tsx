@@ -220,12 +220,6 @@ const ItemSection = ({
                           <Link
                             href={`/habits?highlight=${habit.id}`}
                             className="flex items-center gap-1 hover:text-primary transition-colors"
-                            onClick={() => {
-                              const newViewType = isTask ? 'tasks' : 'habits';
-                              if (browserSettings.viewType !== newViewType) {
-                                setBrowserSettings(prev => ({ ...prev, viewType: newViewType }));
-                              }
-                            }}
                           >
                             {isTask && isTaskOverdue(habit, settings.system.timezone) && !isCompleted && (
                               <TooltipProvider>
@@ -314,12 +308,6 @@ const ItemSection = ({
         <Link
           href={viewLink}
           className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1"
-          onClick={() => {
-            const newViewType = isTask ? 'tasks' : 'habits';
-            if (browserSettings.viewType !== newViewType) {
-              setBrowserSettings(prev => ({ ...prev, viewType: newViewType }));
-            }
-          }}
         >
           View
           <ArrowRight className="h-3 w-3" />

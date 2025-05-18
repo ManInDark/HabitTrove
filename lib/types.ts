@@ -181,8 +181,6 @@ export type CompletionCache = {
   }
 }
 
-export type ViewType = 'habits' | 'tasks'
-
 export interface JotaiHydrateInitialValues {
   settings: Settings;
   coins: CoinsData;

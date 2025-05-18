@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'; // Added
 import { Label } from '@/components/ui/label'; // Added
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'; // Added
 import { useHabits } from '@/hooks/useHabits'
-import { browserSettingsAtom, habitsAtom } from '@/lib/atoms'
+import { habitsAtom } from '@/lib/atoms'
 import { HabitIcon, TaskIcon } from '@/lib/constants'
 import { Habit } from '@/lib/types'
 import { getHabitFreq } from '@/lib/utils'; // Added
@@ -19,12 +19,9 @@ import EmptyState from './EmptyState'
 import HabitItem from './HabitItem'
 import { ViewToggle } from './ViewToggle'
 
-export default function HabitList() {
+export default function HabitList({ isTasksView }: { isTasksView: boolean}) {
   const { saveHabit, deleteHabit } = useHabits()
   const [habitsData] = useAtom(habitsAtom) // setHabitsData removed as it's not used
-  const [browserSettings] = useAtom(browserSettingsAtom)
-  const isTasksView = browserSettings.viewType === 'tasks'
-  // const [settings] = useAtom(settingsAtom); // settingsAtom is not directly used in HabitList itself.
 
   type SortableField = 'name' | 'coinReward' | 'dueDate' | 'frequency';
   type SortOrder = 'asc' | 'desc';
@@ -130,9 +127,6 @@ export default function HabitList() {
             <Plus className='mr-2 h-4 w-4' />{`Add ${isTasksView ? "Task" : "Habit"}`}
           </Button>
         </span>
-      </div>
-      <div className='py-4'>
-        <ViewToggle />
       </div>
 
       {/* Search and Sort Controls */}

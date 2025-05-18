@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { useHabits } from '@/hooks/useHabits'
-import { browserSettingsAtom, settingsAtom, usersAtom } from '@/lib/atoms'
+import { settingsAtom, usersAtom } from '@/lib/atoms'
 import { useHelpers } from '@/lib/client-helpers'
 import { Habit, User } from '@/lib/types'
 import { convertMachineReadableFrequencyToHumanReadable, getCompletionsForToday, isTaskOverdue } from '@/lib/utils'
@@ -15,6 +15,7 @@ import { Check, Coins, Edit, MoreVertical, Pin, Undo2 } from 'lucide-react'; // 
 import { useEffect, useState } from 'react'
 import { HabitContextMenuItems } from './HabitContextMenuItems'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { usePathname } from 'next/navigation'
 
 interface HabitItemProps {
   habit: Habit
@@ -53,9 +54,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
   const { currentUser, hasPermission } = useHelpers()
   const canWrite = hasPermission('habit', 'write')
   const canInteract = hasPermission('habit', 'interact')
-  const [browserSettings] = useAtom(browserSettingsAtom)
-  const isTasksView = browserSettings.viewType === 'tasks'
-  const isRecurRule = !isTasksView
+  const pathname = usePathname();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -83,7 +82,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
     >
       <CardHeader className="flex-none">
         <div className="flex justify-between items-start">
-          <CardTitle className={`line-clamp-1 ${habit.archived ? 'text-gray-400 dark:text-gray-500' : ''} flex items-center ${isTasksView ? 'w-full' : ''} justify-between`}>
+          <CardTitle className={`line-clamp-1 ${habit.archived ? 'text-gray-400 dark:text-gray-500' : ''} flex items-center ${pathname.includes("tasks") ? 'w-full' : ''} justify-between`}>
             <div className="flex items-center gap-1">
               {habit.pinned && (
                 <Pin className="h-4 w-4 text-yellow-500" />
@@ -108,7 +107,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
         <p className={`text-sm ${habit.archived ? 'text-gray-400 dark:text-gray-500' : 'text-gray-500'}`}>
           When: {convertMachineReadableFrequencyToHumanReadable({
             frequency: habit.frequency,
-            isRecurRule,
+            isRecurRule: pathname.includes("habits"),
             timezone: settings.system.timezone
           })}
         </p>

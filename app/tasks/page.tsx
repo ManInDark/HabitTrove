@@ -1,9 +1,9 @@
 import HabitList from '@/components/HabitList'
 
-export default function HabitsPage() {
+export default function TasksPage() {
   return (
     <div className="flex flex-col">
-      <HabitList isTasksView={false} />
+      <HabitList isTasksView={true} />
     </div>
   )
 }
