@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge"
 import { completedHabitsMapAtom, habitsByDateFamily, settingsAtom } from '@/lib/atoms'
 import { getTodayInTimezone } from '@/lib/utils'
 import { useAtom } from 'jotai'
+import { useTranslations } from 'next-intl'
 
 interface CompletionCountBadgeProps {
   type: 'habits' | 'tasks'
@@ -12,6 +13,7 @@ export default function CompletionCountBadge({
   type,
   date
 }: CompletionCountBadgeProps) {
+  const t = useTranslations('CompletionCountBadge');
   const [settings] = useAtom(settingsAtom)
   const [completedHabitsMap] = useAtom(completedHabitsMapAtom)
   const targetDate = date || getTodayInTimezone(settings.system.timezone)
@@ -27,7 +29,7 @@ export default function CompletionCountBadge({
 
   return (
     <Badge variant="secondary">
-      {`${completedCount}/${totalCount} Completed`}
+      {t('countCompleted', { completedCount, totalCount })}
     </Badge>
   )
 }

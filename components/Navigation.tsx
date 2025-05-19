@@ -3,31 +3,33 @@
 import { useHelpers } from '@/lib/client-helpers'
 import { HabitIcon, TaskIcon } from '@/lib/constants'
 import { Calendar, Coins, Gift, Home } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import AboutModal from './AboutModal'
-import { usePathname } from 'next/navigation'
 
 type ViewPort = 'main' | 'mobile'
-
-const navItems = () => [
-  { icon: Home, label: 'Dashboard', href: '/', position: 'main' },
-  { icon: HabitIcon, label: 'Habits', href: '/habits', position: 'main' },
-  { icon: TaskIcon, label: 'Tasks', href: '/tasks', position: 'main' },
-  { icon: Calendar, label: 'Calendar', href: '/calendar', position: 'main' },
-  { icon: Gift, label: 'Wishlist', href: '/wishlist', position: 'main' },
-  { icon: Coins, label: 'Coins', href: '/coins', position: 'main' },
-]
 
 interface NavigationProps {
   viewPort: ViewPort
 }
 
 export default function Navigation({ viewPort }: NavigationProps) {
+  const t = useTranslations('Navigation')
   const [showAbout, setShowAbout] = useState(false)
   const [isMobileView, setIsMobileView] = useState(false)
   const { isIOS } = useHelpers()
   const pathname = usePathname();
+
+  const navItems = () => [
+    { icon: Home, label: t('dashboard'), href: '/', position: 'main' },
+    { icon: HabitIcon, label: t('habits'), href: '/habits', position: 'main' },
+    { icon: TaskIcon, label: t('tasks'), href: '/tasks', position: 'main' },
+    { icon: Calendar, label: t('calendar'), href: '/calendar', position: 'main' },
+    { icon: Gift, label: t('wishlist'), href: '/wishlist', position: 'main' },
+    { icon: Coins, label: t('coins'), href: '/coins', position: 'main' },
+  ]
 
   useEffect(() => {
     const handleResize = () => {

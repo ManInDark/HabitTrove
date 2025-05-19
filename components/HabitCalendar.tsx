@@ -10,19 +10,21 @@ import { d2s, getCompletionsForDate, getISODate, getNow, isHabitDue } from '@/li
 import { useAtom } from 'jotai'
 import { Circle, CircleCheck } from 'lucide-react'
 import { DateTime } from 'luxon'
+import { useTranslations } from 'next-intl'
 import { useCallback, useMemo, useState } from 'react'
 import Linkify from './linkify'
 
 export default function HabitCalendar() {
+  const t = useTranslations('HabitCalendar')
   const { completePastHabit } = useHabits()
 
   const handleCompletePastHabit = useCallback(async (habit: Habit, date: DateTime) => {
     try {
       await completePastHabit(habit, date)
     } catch (error) {
-      console.error('Error completing past habit:', error)
+      console.error(t('errorCompletingPastHabit'), error)
     }
-  }, [completePastHabit])
+  }, [completePastHabit, t])
   const [settings] = useAtom(settingsAtom)
   const [selectedDateTime, setSelectedDateTime] = useState<DateTime>(getNow({ timezone: settings.system.timezone }))
   const selectedDate = selectedDateTime.toFormat("yyyy-MM-dd")
@@ -41,11 +43,11 @@ export default function HabitCalendar() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Habit Calendar</h1>
+      <h1 className="text-3xl font-bold mb-6">{t('title')}</h1>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Calendar</CardTitle>
+            <CardTitle>{t('calendarCardTitle')}</CardTitle>
           </CardHeader>
           <CardContent>
             <Calendar
@@ -74,7 +76,7 @@ export default function HabitCalendar() {
               {selectedDateTime ? (
                 <>{d2s({ dateTime: selectedDateTime, timezone: settings.system.timezone, format: DateTime.DATE_MED_WITH_WEEKDAY })}</>
               ) : (
-                'Select a date'
+                t('selectDatePrompt')
               )}
             </CardTitle>
           </CardHeader>
@@ -84,7 +86,7 @@ export default function HabitCalendar() {
                 {hasTasks && (
                   <div className="pt-2 border-t">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Tasks</h3>
+                      <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">{t('tasksSectionTitle')}</h3>
                       <CompletionCountBadge type="tasks" date={selectedDate.toString()} />
                     </div>
                     <ul className="space-y-3">
@@ -143,7 +145,7 @@ export default function HabitCalendar() {
                 )}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Habits</h3>
+                    <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">{t('habitsSectionTitle')}</h3>
                     <CompletionCountBadge type="habits" date={selectedDate.toString()} />
                   </div>
                   <ul className="space-y-3">

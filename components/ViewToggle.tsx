@@ -4,8 +4,9 @@ import { browserSettingsAtom, habitsAtom, settingsAtom } from '@/lib/atoms'
 import { HabitIcon, TaskIcon } from '@/lib/constants'
 import { cn, isHabitDueToday } from '@/lib/utils'
 import { useAtom } from 'jotai'
-import { NotificationBadge } from './ui/notification-badge'
+import { useTranslations } from 'next-intl'
 import { usePathname, useRouter } from 'next/navigation'
+import { NotificationBadge } from './ui/notification-badge'
 
 interface ViewToggleProps {
   className?: string
@@ -14,6 +15,7 @@ interface ViewToggleProps {
 export function ViewToggle({
   className
 }: ViewToggleProps) {
+  const t = useTranslations('ViewToggle')
   const [browserSettings, setBrowserSettings] = useAtom(browserSettingsAtom)
   const [habits] = useAtom(habitsAtom)
   const [settings] = useAtom(settingsAtom)
@@ -40,9 +42,9 @@ export function ViewToggle({
           )}
         >
           <HabitIcon className="h-4 w-4" />
-          <span className="hidden sm:inline">Habits</span>
+          <span className="hidden sm:inline">{t('habitsLabel')}</span>
         </button>
-        <NotificationBadge 
+        <NotificationBadge
           label={dueTasksCount}
           show={dueTasksCount > 0}
           variant={pathname.includes('tasks') ? 'secondary' : 'default'}
@@ -56,7 +58,7 @@ export function ViewToggle({
             )}
           >
             <TaskIcon className="h-4 w-4" />
-            <span className="hidden sm:inline">Tasks</span>
+            <span className="hidden sm:inline">{t('tasksLabel')}</span>
           </button>
         </NotificationBadge>
         <div

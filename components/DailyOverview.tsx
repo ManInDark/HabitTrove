@@ -18,6 +18,7 @@ import { Habit, WishlistItemType } from '@/lib/types'
 import { cn, d2t, getNow, getTodayInTimezone, isHabitDue, isSameDate, isTaskOverdue, t2d } from '@/lib/utils'
 import { useAtom } from 'jotai'
 import { AlertTriangle, ArrowRight, ChevronDown, ChevronUp, Circle, CircleCheck, Coins, Pin, Plus } from 'lucide-react'; // Removed unused icons
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useState } from 'react'
 import AddEditHabitModal from './AddEditHabitModal'
@@ -50,6 +51,7 @@ const ItemSection = ({
   viewLink,
   addNewItem,
 }: ItemSectionProps) => {
+  const t = useTranslations('DailyOverview');
   const { completeHabit, undoComplete, saveHabit, deleteHabit, archiveHabit, habitFreqMap } = useHabits();
   const [_, setPomo] = useAtom(pomodoroAtom);
   const [browserSettings, setBrowserSettings] = useAtom(browserSettingsAtom);
@@ -101,7 +103,7 @@ const ItemSection = ({
             onClick={addNewItem}
           >
             <Plus className="h-4 w-4" />
-            <span className="sr-only">Add {isTask ? "Task" : "Habit"}</span>
+            <span className="sr-only">{t(isTask ? 'addTaskButtonLabel' : 'addHabitButtonLabel')}</span>
           </Button>
         </div>
         <div className="text-center text-muted-foreground text-sm py-4">
@@ -126,7 +128,7 @@ const ItemSection = ({
             onClick={addNewItem}
           >
             <Plus className="h-4 w-4" />
-            <span className="sr-only">Add {isTask ? "Task" : "Habit"}</span>
+            <span className="sr-only">{t(isTask ? 'addTaskButtonLabel' : 'addHabitButtonLabel')}</span>
           </Button>
         </div>
       </div>
@@ -229,7 +231,7 @@ const ItemSection = ({
                                     <AlertTriangle className="h-4 w-4 flex-shrink-0 text-red-600 dark:text-red-500" />
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>Overdue</p>
+                                    <p>{t('overdueTooltip')}</p>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -295,12 +297,12 @@ const ItemSection = ({
         >
           {currentExpanded ? (
             <>
-              Show less
+              {t('showLessButton')}
               <ChevronUp className="h-3 w-3" />
             </>
           ) : (
             <>
-              Show all
+              {t('showAllButton')}
               <ChevronDown className="h-3 w-3" />
             </>
           )}
@@ -343,6 +345,7 @@ export default function DailyOverview({
   wishlistItems,
   coinBalance,
 }: UpcomingItemsProps) {
+  const t = useTranslations('DailyOverview');
   const { completeHabit, undoComplete } = useHabits()
   const [settings] = useAtom(settingsAtom)
   const [completedHabitsMap] = useAtom(completedHabitsMapAtom)
@@ -396,16 +399,16 @@ export default function DailyOverview({
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Today's Overview</CardTitle>
+          <CardTitle>{t('todaysOverviewTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
             {/* Tasks Section */}
             {hasTasks && (
               <ItemSection
-                title="Daily Tasks"
+                title={t('dailyTasksTitle')}
                 items={dailyTasks}
-                emptyMessage="No tasks due today. Add some tasks to get started!"
+                emptyMessage={t('noTasksDueTodayMessage')}
                 isTask={true}
                 viewLink="/habits?view=tasks"
                 addNewItem={() => setModalConfig({ isOpen: true, isTask: true })}
@@ -414,9 +417,9 @@ export default function DailyOverview({
 
             {/* Habits Section */}
             <ItemSection
-              title="Daily Habits"
+              title={t('dailyHabitsTitle')}
               items={dailyHabits}
-              emptyMessage="No habits due today. Add some habits to get started!"
+              emptyMessage={t('noHabitsDueTodayMessage')}
               isTask={false}
               viewLink="/habits"
               addNewItem={() => setModalConfig({ isOpen: true, isTask: false })}
@@ -424,16 +427,19 @@ export default function DailyOverview({
 
             <div className="space-y-2">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold">Wishlist Goals</h3>
+                <h3 className="font-semibold">{t('wishlistGoalsTitle')}</h3>
                 <Badge variant="secondary">
-                  {wishlistItems.filter(item => item.coinCost <= coinBalance).length}/{wishlistItems.length} Redeemable
+                  {t('redeemableBadgeLabel', {
+                    count: wishlistItems.filter(item => item.coinCost <= coinBalance).length,
+                    total: wishlistItems.length
+                  })}
                 </Badge>
               </div>
               <div>
                 <div className={`space-y-3 transition-all duration-300 ease-in-out ${browserSettings.expandedWishlist ? 'max-h-none' : 'max-h-[200px]'} overflow-hidden`}>
                   {sortedWishlistItems.length === 0 ? (
                     <div className="text-center text-muted-foreground text-sm py-4">
-                      No wishlist items yet. Add some goals to work towards!
+                      {t('noWishlistItemsMessage')}
                     </div>
                   ) : (
                     <>
@@ -480,8 +486,8 @@ export default function DailyOverview({
                               />
                               <p className="text-xs text-muted-foreground mt-2">
                                 {isRedeemable
-                                  ? "Ready to redeem!"
-                                  : `${item.coinCost - coinBalance} coins to go`
+                                  ? t('readyToRedeemMessage')
+                                  : t('coinsToGoMessage', { amount: item.coinCost - coinBalance })
                                 }
                               </p>
                             </Link>
@@ -497,12 +503,12 @@ export default function DailyOverview({
                   >
                     {browserSettings.expandedWishlist ? (
                       <>
-                        Show less
+                        {t('showLessButton')}
                         <ChevronUp className="h-3 w-3" />
                       </>
                     ) : (
                       <>
-                        Show all
+                        {t('showAllButton')}
                         <ChevronDown className="h-3 w-3" />
                       </>
                     )}
@@ -511,7 +517,7 @@ export default function DailyOverview({
                     href="/wishlist"
                     className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1"
                   >
-                    View
+                    {t('viewButton')}
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                 </div>

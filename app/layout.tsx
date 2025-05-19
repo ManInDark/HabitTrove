@@ -8,7 +8,8 @@ import { DM_Sans } from 'next/font/google'
 import { Suspense } from 'react'
 import { loadCoinsData, loadHabitsData, loadServerSettings, loadSettings, loadUsersData, loadWishlistData } from './actions/data'
 import './globals.css'
-
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 
 // Inter (clean, modern, excellent readability)
 // const inter = Inter({
@@ -36,6 +37,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const locale = await getLocale();
+  // Providing all messages to the client
+  // side is the easiest way to get started
+  const messages = await getMessages();
+
   const [initialSettings, initialHabits, initialCoins, initialWishlist, initialUsers, initialServerSettings] = await Promise.all([
     loadSettings(),
     loadHabitsData(),
@@ -47,7 +53,7 @@ export default async function RootLayout({
 
   return (
     // set suppressHydrationWarning to true to prevent hydration errors when using ThemeProvider (https://ui.shadcn.com/docs/dark-mode/next)
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className={activeFont.className}>
         <script
           dangerouslySetInnerHTML={{
@@ -78,18 +84,20 @@ export default async function RootLayout({
                 serverSettings: initialServerSettings,
               }}
             >
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <SessionProvider>
-                  <Layout>
-                    {children}
-                  </Layout>
-                </SessionProvider>
-              </ThemeProvider>
+              <NextIntlClientProvider locale={locale} messages={messages}>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  enableSystem
+                  disableTransitionOnChange
+                >
+                  <SessionProvider>
+                    <Layout>
+                      {children}
+                    </Layout>
+                  </SessionProvider>
+                </ThemeProvider>
+              </NextIntlClientProvider>
             </JotaiHydrate>
           </Suspense>
         </JotaiProvider>

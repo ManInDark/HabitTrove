@@ -12,6 +12,7 @@ import { useHelpers } from '@/lib/client-helpers'
 import { User, WishlistItemType } from '@/lib/types'
 import { useAtom } from 'jotai'
 import { Archive, ArchiveRestore, Coins, Edit, Gift, MoreVertical, Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 
 interface WishlistItemProps {
@@ -29,7 +30,7 @@ interface WishlistItemProps {
 
 const renderUserAvatars = (item: WishlistItemType, currentUser: User | null, usersData: { users: User[] }) => {
   if (!item.userIds || item.userIds.length <= 1) return null;
-  
+
   return (
     <div className="flex -space-x-2 ml-2 flex-shrink-0">
       {item.userIds?.filter((u) => u !== currentUser?.id).map(userId => {
@@ -57,11 +58,13 @@ export default function WishlistItem({
   isHighlighted,
   isRecentlyRedeemed
 }: WishlistItemProps) {
+  const t = useTranslations('WishlistItem')
   const { currentUser, hasPermission } = useHelpers()
   const canWrite = hasPermission('wishlist', 'write')
   const canInteract = hasPermission('wishlist', 'interact')
   const [usersData] = useAtom(usersAtom)
-  
+
+
   return (
     <Card
       id={`wishlist-${item.id}`}
@@ -76,7 +79,7 @@ export default function WishlistItem({
           </CardTitle>
           {item.targetCompletions && (
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              ({item.targetCompletions} {item.targetCompletions === 1 ? 'use' : 'uses'} left)
+              ({item.targetCompletions === 1 ? t('usesLeftSingular') : t('usesLeftPlural', { count: item.targetCompletions })})
             </span>
           )}
         </div>
@@ -95,7 +98,7 @@ export default function WishlistItem({
         <div className="flex items-center gap-2">
           <Coins className={`h-4 w-4 ${item.archived ? 'text-gray-400 dark:text-gray-500' : 'text-yellow-400'}`} />
           <span className={`text-sm font-medium ${item.archived ? 'text-gray-400 dark:text-gray-500' : ''}`}>
-            {item.coinCost} coins
+            {item.coinCost} {t('coinsSuffix')}
           </span>
         </div>
       </CardContent>
@@ -112,13 +115,13 @@ export default function WishlistItem({
             <span>
               {isRecentlyRedeemed ? (
                 <>
-                  <span className="sm:hidden">Done</span>
-                  <span className="hidden sm:inline">Redeemed!</span>
+                  <span className="sm:hidden">{t('redeemedDone')}</span>
+                  <span className="hidden sm:inline">{t('redeemedExclamation')}</span>
                 </>
               ) : (
                 <>
-                  <span className="sm:hidden">Redeem</span>
-                  <span className="hidden sm:inline">Redeem</span>
+                  <span className="sm:hidden">{t('redeem')}</span>
+                  <span className="hidden sm:inline">{t('redeem')}</span>
                 </>
               )}
             </span>
@@ -134,7 +137,7 @@ export default function WishlistItem({
               className="hidden sm:flex"
             >
               <Edit className="h-4 w-4" />
-              <span className="ml-2">Edit</span>
+              <span className="ml-2">{t('editButton')}</span>
             </Button>
           )}
           <DropdownMenu>
@@ -147,18 +150,18 @@ export default function WishlistItem({
               {!item.archived && (
                 <DropdownMenuItem disabled={!canWrite} onClick={onArchive}>
                   <Archive className="mr-2 h-4 w-4" />
-                  <span>Archive</span>
+                  <span>{t('archiveButton')}</span>
                 </DropdownMenuItem>
               )}
               {item.archived && (
                 <DropdownMenuItem disabled={!canWrite} onClick={onUnarchive}>
                   <ArchiveRestore className="mr-2 h-4 w-4" />
-                  <span>Unarchive</span>
+                  <span>{t('unarchiveButton')}</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem onClick={onEdit} className="sm:hidden">
                 <Edit className="mr-2 h-4 w-4" />
-                Edit
+                {t('editButton')}
               </DropdownMenuItem>
               <DropdownMenuSeparator className="sm:hidden" />
               <DropdownMenuItem
@@ -167,7 +170,7 @@ export default function WishlistItem({
                 disabled={!canWrite}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {t('deleteButton')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
