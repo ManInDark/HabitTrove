@@ -1,4 +1,3 @@
-import { ResponsiveContainer } from 'recharts'
 import ClientWrapper from './ClientWrapper'
 import Header from './Header'
 import Navigation from './Navigation'

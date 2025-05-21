@@ -108,10 +108,26 @@ export default function PomodoroTimer() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       releaseWakeLock()
     }
-  }, [state])
+  }, [state, t])
 
   // Timer logic
   useEffect(() => {
+    const handleTimerEnd = async () => {
+      setState("stopped");
+      const currentTimerType = currentTimerRef.current.type;
+      currentTimerRef.current =
+        currentTimerType === "focus" ? PomoConfigs.break : PomoConfigs.focus;
+      setTimeLeft(currentTimerRef.current.duration);
+      const newLabels = currentTimerRef.current.getLabels();
+      setCurrentLabel(newLabels[Math.floor(Math.random() * newLabels.length)]);
+
+      // update habits only after focus sessions
+      if (selectedHabit && currentTimerType === "focus") {
+        await completeHabit(selectedHabit);
+        // The atom will automatically update with the new completions
+      }
+    };
+
     let interval: ReturnType<typeof setInterval> | null = null;
 
     if (state === "started") {
@@ -133,22 +149,7 @@ export default function PomodoroTimer() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [state]);
-
-  const handleTimerEnd = async () => {
-    setState("stopped")
-    const currentTimerType = currentTimerRef.current.type
-    currentTimerRef.current = currentTimerType === 'focus' ? PomoConfigs.break : PomoConfigs.focus
-    setTimeLeft(currentTimerRef.current.duration)
-    const newLabels = currentTimerRef.current.getLabels();
-    setCurrentLabel(newLabels[Math.floor(Math.random() * newLabels.length)])
-
-    // update habits only after focus sessions
-    if (selectedHabit && currentTimerType === 'focus') {
-      await completeHabit(selectedHabit)
-      // The atom will automatically update with the new completions
-    }
-  }
+  }, [state, timeLeft, PomoConfigs.break, PomoConfigs.focus, completeHabit, selectedHabit]);
 
   const toggleTimer = () => {
     setState(prev => prev === 'started' ? 'paused' : 'started')
