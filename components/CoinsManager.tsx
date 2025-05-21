@@ -102,9 +102,9 @@ export default function CoinsManager() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold mr-6">{t('title')}</h1>
+        <h1 className="text-xl xs:text-3xl font-bold mr-6">{t('title')}</h1>
         {currentUser?.isAdmin && (
           <select
             className="border rounded p-2"
