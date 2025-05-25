@@ -1,6 +1,17 @@
 'use client';
 
 import { signIn } from '@/app/actions/user';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from '@/hooks/use-toast';
 import { usersAtom } from '@/lib/atoms';
 import { useHelpers } from '@/lib/client-helpers';
@@ -8,7 +19,7 @@ import { SafeUser, User } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Description } from '@radix-ui/react-dialog';
 import { useAtom } from 'jotai';
-import { Crown, Plus, User as UserIcon, UserRoundPen } from 'lucide-react';
+import { Crown, Plus, Trash2, User as UserIcon, UserRoundPen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import PasswordEntryForm from './PasswordEntryForm';
@@ -21,18 +32,63 @@ function UserCard({
   onSelect,
   onEdit,
   showEdit,
-  isCurrentUser
+  isCurrentUser,
+  currentLoggedInUserId, // For "don't delete self" check
+  onUserDeleted // Callback to update usersAtom
 }: {
   user: User,
   onSelect: () => void,
   onEdit: () => void,
   showEdit: boolean,
-  isCurrentUser: boolean
+  isCurrentUser: boolean,
+  currentLoggedInUserId?: string,
+  onUserDeleted: (userId: string) => void,
 }) {
+  const t = useTranslations('UserSelectModal');
+  const tWarning = useTranslations('Warning');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteUser = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await fetch('/api/user/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: t('deleteUserSuccessTitle'),
+          description: t('deleteUserSuccessDescription', { username: user.username }),
+        });
+        onUserDeleted(user.id);
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: t('deleteUserErrorTitle'),
+          description: errorData.error || t('genericError'),
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: t('deleteUserErrorTitle'),
+        description: t('networkError'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   return (
     <div key={user.id} className="relative group">
       <button
         onClick={onSelect}
+        disabled={isDeleting} // Disable main button while deleting this user
         className={cn(
           "flex flex-col items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors w-full",
           isCurrentUser && "ring-2 ring-primary"
@@ -53,15 +109,56 @@ function UserCard({
         </span>
       </button>
       {showEdit && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit();
-          }}
-          className="absolute top-0 right-0 p-1 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
-        >
-          <UserRoundPen className="h-4 w-4" />
-        </button>
+        <div className="absolute top-0 right-0 flex space-x-1">
+          {showEdit && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent card selection
+                onEdit();
+              }}
+              disabled={isDeleting}
+              className="p-1 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+              title={t('editUserTooltip')}
+            >
+              <UserRoundPen className="h-4 w-4" />
+            </button>
+          )}
+          {showEdit && user.id !== currentLoggedInUserId && (
+            <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+              <AlertDialogTrigger asChild>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card selection
+                    setShowDeleteConfirm(true);
+                  }}
+                  disabled={isDeleting}
+                  className="p-1 rounded-full bg-red-200 hover:bg-red-300 dark:bg-red-700 dark:hover:bg-red-600 transition-colors text-red-600 dark:text-red-300"
+                  title={t('deleteUserTooltip')}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{tWarning('areYouSure')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t('deleteUserConfirmation', { username: user.username })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(false);}} disabled={isDeleting}>{tWarning('cancel')}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={(e) => { e.stopPropagation(); handleDeleteUser();}}
+                    disabled={isDeleting}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {isDeleting ? t('deletingButtonText') : t('confirmDeleteButtonText')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
       )}
     </div>
   );
@@ -86,32 +183,36 @@ function AddUserButton({ onClick }: { onClick: () => void }) {
 
 function UserSelectionView({
   users,
-  currentUser,
+  currentUserFromHook, // Renamed to avoid confusion with map variable
   onUserSelect,
   onEditUser,
   onCreateUser,
+  onUserDeleted, // Pass through the delete handler
 }: {
   users: User[],
-  currentUser?: SafeUser,
+  currentUserFromHook?: SafeUser,
   onUserSelect: (userId: string) => void,
   onEditUser: (userId: string) => void,
   onCreateUser: () => void,
+  onUserDeleted: (userId: string) => void,
 }) {
   return (
     <div className="grid grid-cols-3 gap-4 p-2 max-h-80 overflow-y-auto">
       {users
-        .filter(user => user.id !== currentUser?.id)
+        .filter(user => user.id !== currentUserFromHook?.id) // Show other users
         .map((user) => (
           <UserCard
             key={user.id}
             user={user}
             onSelect={() => onUserSelect(user.id)}
             onEdit={() => onEditUser(user.id)}
-            showEdit={!!currentUser?.isAdmin}
-            isCurrentUser={false}
+            showEdit={!!currentUserFromHook?.isAdmin}
+            isCurrentUser={false} // This card isn't the currently logged-in user for switching TO
+            currentLoggedInUserId={currentUserFromHook?.id} // For the "don't delete self" check
+            onUserDeleted={onUserDeleted}
           />
         ))}
-      {currentUser?.isAdmin && <AddUserButton onClick={onCreateUser} />}
+      {currentUserFromHook?.isAdmin && <AddUserButton onClick={onCreateUser} />}
     </div>
   );
 }
@@ -122,9 +223,16 @@ export default function UserSelectModal({ onClose }: { onClose: () => void }) {
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
-  const [usersData] = useAtom(usersAtom);
+  const [usersData, setUsersData] = useAtom(usersAtom);
   const users = usersData.users;
   const { currentUser } = useHelpers();
+
+  const handleUserDeleted = (userIdToDelete: string) => {
+    setUsersData(prevData => ({
+      ...prevData,
+      users: prevData.users.filter(u => u.id !== userIdToDelete)
+    }));
+  };
 
   const handleUserSelect = (userId: string) => {
     setSelectedUser(userId);
@@ -166,10 +274,11 @@ export default function UserSelectModal({ onClose }: { onClose: () => void }) {
           {!selectedUser && !isCreating && !isEditing ? (
             <UserSelectionView
               users={users}
-              currentUser={currentUser}
+              currentUserFromHook={currentUser}
               onUserSelect={handleUserSelect}
               onEditUser={handleEditUser}
               onCreateUser={handleCreateUser}
+              onUserDeleted={handleUserDeleted}
             />
           ) : isCreating || isEditing ? (
             <UserForm

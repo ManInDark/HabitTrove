@@ -15,19 +15,28 @@ import { serverSettingsAtom, settingsAtom } from '@/lib/atoms';
 import { Settings, WeekDay } from '@/lib/types';
 import { useAtom } from 'jotai';
 import { Info } from 'lucide-react'; // Import Info icon
+import { useSession } from 'next-auth/react'; // signOut removed
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { saveSettings } from '../actions/data';
+// AlertDialog components and useState removed
+// Trash2 icon removed
 
 export default function SettingsPage() {
   const t = useTranslations('SettingsPage');
+  // tWarning removed
   const [settings, setSettings] = useAtom(settingsAtom);
   const [serverSettings] = useAtom(serverSettingsAtom);
+  const { data: session } = useSession();
+  const router = useRouter();
+  // showConfirmDialog and isDeleting states removed
 
   const updateSettings = async (newSettings: Settings) => {
     await saveSettings(newSettings)
     setSettings(newSettings)
   }
 
+  // handleDeleteAccount function removed
 
   if (!settings) return null
 
@@ -228,6 +237,8 @@ export default function SettingsPage() {
 
           </CardContent>
         </Card>
+
+        {/* Danger Zone Card Removed */}
       </div >
     </>
   )
