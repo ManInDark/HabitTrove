@@ -1,17 +1,6 @@
 'use client';
 
 import { signIn } from '@/app/actions/user';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { toast } from '@/hooks/use-toast';
 import { usersAtom } from '@/lib/atoms';
 import { useHelpers } from '@/lib/client-helpers';
@@ -19,7 +8,7 @@ import { SafeUser, User } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Description } from '@radix-ui/react-dialog';
 import { useAtom } from 'jotai';
-import { Crown, Plus, Trash2, User as UserIcon, UserRoundPen } from 'lucide-react';
+import { Crown, Plus, User as UserIcon, UserRoundPen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import PasswordEntryForm from './PasswordEntryForm';

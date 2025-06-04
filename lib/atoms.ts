@@ -99,6 +99,7 @@ export const pomodoroAtom = atom<PomodoroAtom>({
 })
 
 export const userSelectAtom = atom<boolean>(false)
+export const aboutOpenAtom = atom<boolean>(false)
 
 // Derived atom for completion cache
 export const completionCacheAtom = atom((get) => {

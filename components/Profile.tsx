@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { toast } from "@/hooks/use-toast"
-import { settingsAtom, userSelectAtom } from "@/lib/atoms"
+import { aboutOpenAtom, settingsAtom, userSelectAtom } from "@/lib/atoms"
 import { useHelpers } from "@/lib/client-helpers"
 import { useAtom } from "jotai"
 import { ArrowRightLeft, Crown, Info, LogOut, Moon, Palette, Settings, Sun, User } from "lucide-react"
@@ -13,7 +13,6 @@ import { useTranslations } from 'next-intl'
 import { useTheme } from "next-themes"
 import Link from "next/link"
 import { useState } from "react"
-import AboutModal from "./AboutModal"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
 import UserForm from './UserForm'
 
@@ -22,7 +21,7 @@ export function Profile() {
   const [settings] = useAtom(settingsAtom)
   const [userSelect, setUserSelect] = useAtom(userSelectAtom)
   const [isEditing, setIsEditing] = useState(false)
-  const [showAbout, setShowAbout] = useState(false)
+  const [aboutOpen, setAboutOpen] = useAtom(aboutOpenAtom)
   const { theme, setTheme } = useTheme()
   const { currentUser: user } = useHelpers()
   const [open, setOpen] = useState(false)
@@ -111,27 +110,32 @@ export function Profile() {
             </div>
           </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer px-2 py-1.5" asChild>
-            <Link
-              href="/settings"
-              aria-label={t('settingsLink')}
-              className="flex items-center w-full gap-3"
-            >
-              <Settings className="h-4 w-4" />
-              <span>{t('settingsLink')}</span>
-            </Link>
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                <Link
+                  href="/settings"
+                  aria-label={t('settingsLink')}
+                >
+                  <span>{t('settingsLink')}</span>
+                </Link>
+              </div>
+            </div>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer px-2 py-1.5" asChild>
-            <button
-              onClick={() => setShowAbout(true)}
-              className="flex items-center w-full gap-3"
-            >
-              <Info className="h-4 w-4" />
-              <span>{t('aboutButton')}</span>
-            </button>
+          <DropdownMenuItem className="cursor-pointer px-2 py-1.5" onClick={() => {
+            setOpen(false);  // Close the dropdown
+            setAboutOpen(true);  // Open the about modal
+          }}>
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <Info className="h-4 w-4" />
+                <span>{t('aboutButton')}</span>
+              </div>
+            </div>
           </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer px-2 py-1.5">
-            <div className="flex items-center justify-between w-full gap-3">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
                 <Palette className="h-4 w-4" />
                 <span>{t('themeLabel')}</span>
               </div>
@@ -168,8 +172,6 @@ export function Profile() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
 
       {/* Add the UserForm dialog */}
       {isEditing && user && (

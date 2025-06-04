@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import AboutModal from './AboutModal'
 
 type ViewPort = 'main' | 'mobile'
 
@@ -68,7 +67,6 @@ export default function Navigation({ viewPort }: NavigationProps) {
             ))}
           </div>
         </nav>
-        <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
       </>
     )
   }
@@ -97,7 +95,6 @@ export default function Navigation({ viewPort }: NavigationProps) {
             </div>
           </div>
         </div>
-        <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
       </div>
     )
   }

@@ -12,14 +12,13 @@ import { useHelpers } from '@/lib/client-helpers'
 import { INITIAL_DUE, INITIAL_RECURRENCE_RULE, MAX_COIN_LIMIT, QUICK_DATES } from '@/lib/constants'
 import { Habit } from '@/lib/types'
 import { convertHumanReadableFrequencyToMachineReadable, convertMachineReadableFrequencyToHumanReadable, d2t, serializeRRule } from '@/lib/utils'
-import data from '@emoji-mart/data'
-import Picker from '@emoji-mart/react'
 import { useAtom } from 'jotai'
-import { SmilePlus, Zap } from 'lucide-react'
+import { Zap } from 'lucide-react'
 import { DateTime } from 'luxon'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { RRule } from 'rrule'
+import EmojiPickerButton from './EmojiPickerButton'
 
 interface AddEditHabitModalProps {
   onClose: () => void
@@ -37,9 +36,9 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
   const [targetCompletions, setTargetCompletions] = useState(habit?.targetCompletions || 1)
   const isRecurRule = !isTask
   // Initialize ruleText with the actual frequency string or default, not the display text
-  const initialRuleText = habit?.frequency ? convertMachineReadableFrequencyToHumanReadable({ 
+  const initialRuleText = habit?.frequency ? convertMachineReadableFrequencyToHumanReadable({
     frequency: habit.frequency,
-    isRecurRule, 
+    isRecurRule,
     timezone: settings.system.timezone
   }) : (isRecurRule ? INITIAL_RECURRENCE_RULE : INITIAL_DUE);
   const [ruleText, setRuleText] = useState<string>(initialRuleText)
@@ -111,33 +110,15 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                   onChange={(e) => setName(e.target.value)}
                   required
                 />
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                    >
-                      <SmilePlus className="h-8 w-8" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[300px] p-0">
-                    <Picker
-                      data={data}
-                      onEmojiSelect={(emoji: { native: string }) => {
-                        setName(prev => {
-                          // Add space before emoji if there isn't one already
-                          const space = prev.length > 0 && !prev.endsWith(' ') ? ' ' : '';
-                          return `${prev}${space}${emoji.native}`;
-                        })
-                        // Focus back on input after selection
-                        const input = document.getElementById('name') as HTMLInputElement
-                        input?.focus()
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
+                <EmojiPickerButton
+                  inputIdToFocus="name"
+                  onEmojiSelect={(emoji) => {
+                    setName(prev => {
+                      const space = prev.length > 0 && !prev.endsWith(' ') ? ' ' : '';
+                      return `${prev}${space}${emoji}`;
+                    })
+                  }}
+                />
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
