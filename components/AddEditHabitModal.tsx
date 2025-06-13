@@ -306,7 +306,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
             )}
           </div>
           <DialogFooter>
-            <Button type="submit">
+            <Button type="submit" disabled={!!errorMessage}>
               {habit
                 ? t('saveChangesButton')
                 : t(isTask ? 'addTaskButton' : 'addHabitButton')}
