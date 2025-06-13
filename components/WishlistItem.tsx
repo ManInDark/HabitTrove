@@ -7,9 +7,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { usersAtom } from '@/lib/atoms'
-import { useHelpers } from '@/lib/client-helpers'
+import { currentUserAtom, usersAtom } from '@/lib/atoms'
 import { User, WishlistItemType } from '@/lib/types'
+import { hasPermission } from '@/lib/utils'
 import { useAtom } from 'jotai'
 import { Archive, ArchiveRestore, Coins, Edit, Gift, MoreVertical, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -59,9 +59,9 @@ export default function WishlistItem({
   isRecentlyRedeemed
 }: WishlistItemProps) {
   const t = useTranslations('WishlistItem')
-  const { currentUser, hasPermission } = useHelpers()
-  const canWrite = hasPermission('wishlist', 'write')
-  const canInteract = hasPermission('wishlist', 'interact')
+  const [currentUser] = useAtom(currentUserAtom)
+  const canWrite = hasPermission(currentUser, 'wishlist', 'write')
+  const canInteract = hasPermission(currentUser, 'wishlist', 'interact')
   const [usersData] = useAtom(usersAtom)
 
 

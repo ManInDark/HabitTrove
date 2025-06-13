@@ -13,8 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from '@/hooks/use-toast';
-import { serverSettingsAtom, usersAtom } from '@/lib/atoms';
-import { useHelpers } from '@/lib/client-helpers';
+import { currentUserAtom, serverSettingsAtom, usersAtom } from '@/lib/atoms';
 import { Permission } from '@/lib/types';
 import { passwordSchema, usernameSchema } from '@/lib/zod';
 import { useAtom, useAtomValue } from 'jotai';
@@ -29,6 +28,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
 
+
 interface UserFormProps {
   userId?: string;  // if provided, we're editing; if not, we're creating
   onCancel: () => void;
@@ -40,7 +40,7 @@ export default function UserForm({ userId, onCancel, onSuccess }: UserFormProps)
   const [users, setUsersData] = useAtom(usersAtom);
   const serverSettings = useAtomValue(serverSettingsAtom)
   const user = userId ? users.users.find(u => u.id === userId) : undefined;
-  const { currentUser } = useHelpers()
+  const [currentUser] = useAtom(currentUserAtom)
   const getDefaultPermissions = (): Permission[] => [{
     habit: {
       write: true,

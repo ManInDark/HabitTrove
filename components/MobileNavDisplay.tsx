@@ -1,7 +1,7 @@
-import Link from 'next/link'
-import { NavDisplayProps, NavItemType } from './Navigation';
-import { usePathname } from 'next/navigation';
 import { useHelpers } from '@/lib/client-helpers';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { NavDisplayProps } from './Navigation';
 
 export default function MobileNavDisplay({ navItems }: NavDisplayProps) {
   const pathname = usePathname();

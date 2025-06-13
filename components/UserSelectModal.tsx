@@ -2,8 +2,7 @@
 
 import { signIn } from '@/app/actions/user';
 import { toast } from '@/hooks/use-toast';
-import { usersAtom } from '@/lib/atoms';
-import { useHelpers } from '@/lib/client-helpers';
+import { currentUserAtom, usersAtom } from '@/lib/atoms';
 import { SafeUser, User } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Description } from '@radix-ui/react-dialog';
@@ -131,7 +130,7 @@ export default function UserSelectModal({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState('');
   const [usersData, setUsersData] = useAtom(usersAtom);
   const users = usersData.users;
-  const { currentUser } = useHelpers();
+  const [currentUser] = useAtom(currentUserAtom);
 
 
   const handleUserSelect = (userId: string) => {

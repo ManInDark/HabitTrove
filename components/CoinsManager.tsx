@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useCoins } from '@/hooks/useCoins'
-import { settingsAtom, usersAtom } from '@/lib/atoms'
-import { useHelpers } from '@/lib/client-helpers'
+import { currentUserAtom, settingsAtom, usersAtom } from '@/lib/atoms'
 import { MAX_COIN_LIMIT } from '@/lib/constants'
 import { TransactionType } from '@/lib/types'
 import { d2s, t2d } from '@/lib/utils'
@@ -22,7 +21,7 @@ import { TransactionNoteEditor } from './TransactionNoteEditor'
 
 export default function CoinsManager() {
   const t = useTranslations('CoinsManager')
-  const { currentUser } = useHelpers()
+  const [currentUser] = useAtom(currentUserAtom)
   const [selectedUser, setSelectedUser] = useState<string>()
   const {
     add,

@@ -6,12 +6,11 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { useHabits } from '@/hooks/useHabits'
-import { settingsAtom, usersAtom } from '@/lib/atoms'
-import { useHelpers } from '@/lib/client-helpers'
+import { currentUserAtom, settingsAtom, usersAtom } from '@/lib/atoms'
 import { Habit, User } from '@/lib/types'
-import { convertMachineReadableFrequencyToHumanReadable, getCompletionsForToday, isTaskOverdue } from '@/lib/utils'
+import { convertMachineReadableFrequencyToHumanReadable, getCompletionsForToday, hasPermission, isTaskOverdue } from '@/lib/utils'
 import { useAtom } from 'jotai'
-import { Check, Coins, Edit, MoreVertical, Pin, Undo2 } from 'lucide-react'; // Removed unused icons
+import { Check, Coins, Edit, MoreVertical, Pin, Undo2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -45,7 +44,7 @@ const renderUserAvatars = (habit: Habit, currentUser: User | null, usersData: { 
 
 
 export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
-  const { completeHabit, undoComplete, archiveHabit, unarchiveHabit, saveHabit } = useHabits()
+  const { completeHabit, undoComplete } = useHabits()
   const [settings] = useAtom(settingsAtom)
   const completionsToday = getCompletionsForToday({ habit, timezone: settings.system.timezone })
   const target = habit.targetCompletions || 1
@@ -53,10 +52,10 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
   const [isHighlighted, setIsHighlighted] = useState(false)
   const t = useTranslations('HabitItem');
   const [usersData] = useAtom(usersAtom)
-  const { currentUser, hasPermission } = useHelpers()
-  const canWrite = hasPermission('habit', 'write')
-  const canInteract = hasPermission('habit', 'interact')
   const pathname = usePathname();
+  const [currentUser] = useAtom(currentUserAtom)
+  const canWrite = hasPermission(currentUser, 'habit', 'write')
+  const canInteract = hasPermission(currentUser, 'habit', 'interact')
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)

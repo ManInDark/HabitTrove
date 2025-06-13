@@ -7,8 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
-import { settingsAtom, usersAtom } from '@/lib/atoms'
-import { useHelpers } from '@/lib/client-helpers'
+import { currentUserAtom, settingsAtom, usersAtom } from '@/lib/atoms'
 import { INITIAL_DUE, INITIAL_RECURRENCE_RULE, MAX_COIN_LIMIT, QUICK_DATES } from '@/lib/constants'
 import { Habit } from '@/lib/types'
 import { convertHumanReadableFrequencyToMachineReadable, convertMachineReadableFrequencyToHumanReadable, d2t, serializeRRule } from '@/lib/utils'
@@ -19,6 +18,7 @@ import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { RRule } from 'rrule'
 import EmojiPickerButton from './EmojiPickerButton'
+
 
 interface AddEditHabitModalProps {
   onClose: () => void
@@ -42,7 +42,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
     timezone: settings.system.timezone
   }) : (isRecurRule ? INITIAL_RECURRENCE_RULE : INITIAL_DUE);
   const [ruleText, setRuleText] = useState<string>(initialRuleText)
-  const { currentUser } = useHelpers()
+  const [currentUser] = useAtom(currentUserAtom)
   const [isQuickDatesOpen, setIsQuickDatesOpen] = useState(false)
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>((habit?.userIds || []).filter(id => id !== currentUser?.id))
   const [usersData] = useAtom(usersAtom)

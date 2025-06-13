@@ -1,18 +1,19 @@
 'use client'
 
-import { ReactNode, Suspense, useEffect, useState } from 'react'
-import { useAtom } from 'jotai'
-import { aboutOpenAtom, pomodoroAtom, userSelectAtom } from '@/lib/atoms'
-import PomodoroTimer from './PomodoroTimer'
-import UserSelectModal from './UserSelectModal'
+import { aboutOpenAtom, currentUserIdAtom, pomodoroAtom, userSelectAtom } from '@/lib/atoms';
+import { useAtom, useSetAtom } from 'jotai';
 import { useSession } from 'next-auth/react'
+import { ReactNode, useEffect, useState } from 'react'
 import AboutModal from './AboutModal'
 import LoadingSpinner from './LoadingSpinner'
+import PomodoroTimer from './PomodoroTimer'
+import UserSelectModal from './UserSelectModal'
 
 export default function ClientWrapper({ children }: { children: ReactNode }) {
   const [pomo] = useAtom(pomodoroAtom)
   const [userSelect, setUserSelect] = useAtom(userSelectAtom)
   const [aboutOpen, setAboutOpen] = useAtom(aboutOpenAtom)
+  const setCurrentUserIdAtom = useSetAtom(currentUserIdAtom)
   const { data: session, status } = useSession()
   const currentUserId = session?.user.id
   const [isMounted, setIsMounted] = useState(false);
@@ -28,6 +29,10 @@ export default function ClientWrapper({ children }: { children: ReactNode }) {
       setUserSelect(true)
     }
   }, [currentUserId, status, userSelect, setUserSelect])
+
+  useEffect(() => {
+    setCurrentUserIdAtom(currentUserId)
+  }, [currentUserId, setCurrentUserIdAtom])
 
   if (!isMounted) {
     return <LoadingSpinner />

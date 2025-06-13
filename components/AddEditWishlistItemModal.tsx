@@ -1,11 +1,9 @@
-
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { usersAtom } from '@/lib/atoms'
-import { useHelpers } from '@/lib/client-helpers'
+import { currentUserAtom, usersAtom } from '@/lib/atoms'
 import { MAX_COIN_LIMIT } from '@/lib/constants'
 import { WishlistItemType } from '@/lib/types'
 import { useAtom } from 'jotai'
@@ -37,7 +35,7 @@ export default function AddEditWishlistItemModal({
   const [coinCost, setCoinCost] = useState(editingItem?.coinCost || 1)
   const [targetCompletions, setTargetCompletions] = useState<number | undefined>(editingItem?.targetCompletions)
   const [link, setLink] = useState(editingItem?.link || '')
-  const { currentUser } = useHelpers()
+  const [currentUser] = useAtom(currentUserAtom)
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>((editingItem?.userIds || []).filter(id => id !== currentUser?.id))
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [usersData] = useAtom(usersAtom)

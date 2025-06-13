@@ -5,8 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { toast } from "@/hooks/use-toast"
-import { aboutOpenAtom, settingsAtom, userSelectAtom } from "@/lib/atoms"
-import { useHelpers } from "@/lib/client-helpers"
+import { aboutOpenAtom, currentUserAtom, settingsAtom, userSelectAtom } from "@/lib/atoms"
 import { useAtom } from "jotai"
 import { ArrowRightLeft, Crown, Info, LogOut, Moon, Palette, Settings, Sun, User } from "lucide-react"
 import { useTranslations } from 'next-intl'
@@ -23,7 +22,7 @@ export function Profile() {
   const [isEditing, setIsEditing] = useState(false)
   const [aboutOpen, setAboutOpen] = useAtom(aboutOpenAtom)
   const { theme, setTheme } = useTheme()
-  const { currentUser: user } = useHelpers()
+  const [user] = useAtom(currentUserAtom)
   const [open, setOpen] = useState(false)
 
   const handleSignOut = async () => {
