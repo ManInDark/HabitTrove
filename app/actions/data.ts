@@ -21,11 +21,12 @@ import {
   WishlistData,
   WishlistItemType
 } from '@/lib/types';
-import { d2t, getNow, uuid } from '@/lib/utils';
+import { d2t, generateCryptoHash, getNow, prepareDataForHashing, uuid } from '@/lib/utils';
 import { signInSchema } from '@/lib/zod';
 import fs from 'fs/promises';
 import _ from 'lodash';
 import path from 'path';
+
 
 
 type ResourceType = 'habit' | 'wishlist' | 'coins'
@@ -116,6 +117,33 @@ async function saveData<T>(type: DataType, data: T): Promise<void> {
     await fs.writeFile(filePath, JSON.stringify(saveData, null, 2))
   } catch (error) {
     console.error(`Error saving ${type} data:`, error)
+  }
+}
+
+/**
+ * Calculates the server's global freshness token based on all core data files.
+ * This is an expensive operation as it reads all data files.
+ */
+async function calculateServerFreshnessToken(): Promise<string> {
+  try {
+    const settings = await loadSettings();
+    const habits = await loadHabitsData();
+    const coins = await loadCoinsData();
+    const wishlist = await loadWishlistData();
+    const users = await loadUsersData();
+
+    const dataString = prepareDataForHashing(
+      settings,
+      habits,
+      coins,
+      wishlist,
+      users
+    );
+    const serverToken = await generateCryptoHash(dataString);
+    return serverToken;
+  } catch (error) {
+    console.error("Error calculating server freshness token:", error);
+    throw error;
   }
 }
 
@@ -589,5 +617,26 @@ export async function updateLastNotificationReadTimestamp(userId: string, timest
 export async function loadServerSettings(): Promise<ServerSettings> {
   return {
     isDemo: !!process.env.DEMO,
+  }
+}
+
+/**
+ * Checks if the client's data is fresh by comparing its token with the server's token.
+ * @param clientToken The freshness token calculated by the client.
+ * @returns A promise that resolves to an object { isFresh: boolean }.
+ */
+export async function checkDataFreshness(clientToken: string): Promise<{ isFresh: boolean }> {
+  try {
+    const serverToken = await calculateServerFreshnessToken();
+    const isFresh = clientToken === serverToken;
+    if (!isFresh) {
+      console.log(`Data freshness check: Stale. Client token: ${clientToken}, Server token: ${serverToken}`);
+    }
+    return { isFresh };
+  } catch (error) {
+    console.error("Error in checkDataFreshness:", error);
+    // If server fails to determine its token, assume client might be stale to be safe,
+    // or handle error reporting differently.
+    return { isFresh: false };
   }
 }
