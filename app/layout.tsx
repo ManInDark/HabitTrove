@@ -1,15 +1,16 @@
 import { JotaiHydrate } from '@/components/jotai-hydrate'
 import { JotaiProvider } from '@/components/jotai-providers'
 import Layout from '@/components/Layout'
+import LoadingSpinner from '@/components/LoadingSpinner'
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from '@/components/ui/toaster'
 import { SessionProvider } from 'next-auth/react'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getMessages } from 'next-intl/server'
 import { DM_Sans } from 'next/font/google'
 import { Suspense } from 'react'
 import { loadCoinsData, loadHabitsData, loadServerSettings, loadSettings, loadUsersData, loadWishlistData } from './actions/data'
 import './globals.css'
-import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
 
 // Inter (clean, modern, excellent readability)
 // const inter = Inter({
@@ -73,7 +74,7 @@ export default async function RootLayout({
           }}
         />
         <JotaiProvider>
-          <Suspense fallback="loading">
+          <Suspense fallback={<LoadingSpinner />}>
             <JotaiHydrate
               initialValues={{
                 settings: initialSettings,
