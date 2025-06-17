@@ -6,20 +6,21 @@ import { useTranslations } from 'next-intl'
 import { ElementType, useEffect, useState } from 'react'
 import NavDisplay from './NavDisplay'
 
-type ViewPort = 'main' | 'mobile'
-
 export interface NavItemType {
   icon: ElementType;
   label: string;
   href: string;
 }
 
-interface NavigationProps {
-  position: ViewPort
-}
+export default function Navigation({ position }: { position: 'main' | 'mobile' }) {
+  const t = useTranslations('Navigation');
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
-export default function Navigation({ position: viewPort }: NavigationProps) {
-  const t = useTranslations('Navigation')
+  useEffect(() => {
+    const handleResize = () => {setIsMobile(window.innerWidth < 1024); };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [setIsMobile]);
 
   const currentNavItems: NavItemType[] = [
     { icon: Home, label: t('dashboard'), href: '/' },
@@ -30,5 +31,10 @@ export default function Navigation({ position: viewPort }: NavigationProps) {
     { icon: Coins, label: t('coins'), href: '/coins' },
   ]
 
-  return <NavDisplay navItems={currentNavItems} isMobile={viewPort === 'mobile'} />
+  if ((position === 'mobile' && isMobile) || (position === 'main' && !isMobile)) {
+    return <NavDisplay navItems={currentNavItems} isMobile={isMobile} />
+  }
+  else {
+    return <></>
+  }
 }

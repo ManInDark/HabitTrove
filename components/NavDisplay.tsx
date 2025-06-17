@@ -10,7 +10,7 @@ export default function NavDisplay({ navItems, isMobile }: { navItems: NavItemTy
   if (isMobile) {
     return (
         <>
-        <div className={isMobile && isIOS ? "pb-20" : "pb-16"} />
+        {isMobile && (<div className={isIOS ? "pb-20" : "pb-16"} />)}
         <nav className={`lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg ${isIOS ? "pb-4" : ""}`}>
             <div className="grid grid-cols-6 w-full">
             {navItems.map((item) => (
