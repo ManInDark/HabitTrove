@@ -27,6 +27,7 @@ import ConfirmDialog from './ConfirmDialog'
 import { HabitContextMenuItems } from './HabitContextMenuItems'
 import Linkify from './linkify'
 import { Button } from './ui/button'
+import { DESKTOP_DISPLAY_ITEM_COUNT } from '@/lib/constants'
 
 interface UpcomingItemsProps {
   habits: Habit[]
@@ -165,7 +166,7 @@ const ItemSection = ({
             const bTarget = b.targetCompletions || 1;
             return bTarget - aTarget;
           })
-          .slice(0, currentExpanded ? undefined : 5)
+          .slice(0, currentExpanded ? undefined : DESKTOP_DISPLAY_ITEM_COUNT)
           .map((habit) => {
             const completionsToday = habit.completions.filter(completion =>
               isSameDate(t2d({ timestamp: completion, timezone: settings.system.timezone }), t2d({ timestamp: d2t({ dateTime: getNow({ timezone: settings.system.timezone }) }), timezone: settings.system.timezone }))
@@ -295,7 +296,7 @@ const ItemSection = ({
           onClick={() => setCurrentExpanded(!currentExpanded)}
           className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1"
         >
-          {currentExpanded ? (
+          {items.length > DESKTOP_DISPLAY_ITEM_COUNT && (currentExpanded ? (
             <>
               {t('showLessButton')}
               <ChevronUp className="h-3 w-3" />
@@ -305,7 +306,7 @@ const ItemSection = ({
               {t('showAllButton')}
               <ChevronDown className="h-3 w-3" />
             </>
-          )}
+          ))}
         </button>
         <Link
           href={viewLink}
@@ -444,7 +445,7 @@ export default function DailyOverview({
                   ) : (
                     <>
                       {sortedWishlistItems
-                        .slice(0, browserSettings.expandedWishlist ? undefined : 5)
+                        .slice(0, browserSettings.expandedWishlist ? undefined : DESKTOP_DISPLAY_ITEM_COUNT)
                         .map((item) => {
                           const isRedeemable = item.coinCost <= coinBalance
                           return (
@@ -501,7 +502,7 @@ export default function DailyOverview({
                     onClick={() => setBrowserSettings(prev => ({ ...prev, expandedWishlist: !prev.expandedWishlist }))}
                     className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1"
                   >
-                    {browserSettings.expandedWishlist ? (
+                    {wishlistItems.length > DESKTOP_DISPLAY_ITEM_COUNT && (browserSettings.expandedWishlist ? (
                       <>
                         {t('showLessButton')}
                         <ChevronUp className="h-3 w-3" />
@@ -511,7 +512,7 @@ export default function DailyOverview({
                         {t('showAllButton')}
                         <ChevronDown className="h-3 w-3" />
                       </>
-                    )}
+                    ))}
                   </button>
                   <Link
                     href="/wishlist"

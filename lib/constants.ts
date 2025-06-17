@@ -32,3 +32,5 @@ export const QUICK_DATES = [
 ] as const
 
 export const MAX_COIN_LIMIT = 9999
+
+export const DESKTOP_DISPLAY_ITEM_COUNT = 4
