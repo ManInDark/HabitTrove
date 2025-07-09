@@ -1,14 +1,24 @@
 # <img align="left" width="50" height="50" src="https://github.com/user-attachments/assets/99dcf223-3680-4b3a-8050-d9788f051682" /> HabitTrove
 
-![cover](https://github.com/user-attachments/assets/b63e98b4-64ae-49c7-ae7e-21ef76c04a5a)
-
 HabitTrove is a gamified habit tracking application that helps you build and maintain positive habits by rewarding you with coins, which you can use to exchange for rewards.
 
-> **⚠️ Important:** HabitTrove is currently in beta. Please regularly backup your `data/` directory to prevent any potential data loss.
+**⚠️ Important:** HabitTrove is currently in beta. Please regularly backup your `data/` directory to prevent any potential data loss.
 
-## Try the Demo
+## Differences to Upstream
 
-Want to try HabitTrove before installing? Visit the public [demo instance](https://demo.habittrove.com) to experience all features without any setup required. (do not store personal info. Data on the demo instance is reset daily)
+I generally try to keep the `main` branch up to date with upstream features, merging tagged versions and mapping them to `<upstream-version>.0`.
+
+In this version I've taken steps to ensure a smoother experience and decreased the chance of the program bricking itself. This doesn't mean that it's completely stable, but I've fixed the most glaring bugs I encountered.
+
+Differences (as of writing) are:
+- resolved linting problems so you can actually commit things
+- added missing dependency
+- refactored adding habit modal to cause less errors
+- resolved undefined error
+- replaced dockerhub release flow with github
+- miscellaneous refactorings
+- split habits & tasks page into two different pages
+- only display "show all" if there are more than 4 entries
 
 ## Features
 
