@@ -1,13 +1,12 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { DateTime, DateTimeFormatOptions } from "luxon"
-import { datetime, RRule } from 'rrule'
-import { Freq, Habit, CoinTransaction, Permission, ParsedFrequencyResult, ParsedResultType, User, Settings, HabitsData, CoinsData, WishlistData, UserData } from '@/lib/types'
-import { DUE_MAP, INITIAL_DUE, RECURRENCE_RULE_MAP } from "./constants"
+import { toast } from "@/hooks/use-toast"
+import { CoinsData, CoinTransaction, Freq, Habit, HabitsData, ParsedFrequencyResult, ParsedResultType, SafeUser, Settings, User, UserData, WishlistData } from '@/lib/types'
 import * as chrono from 'chrono-node'
-import _ from "lodash"
-import { v4 as uuidv4 } from 'uuid'
-import stableStringify from 'json-stable-stringify';
+import { clsx, type ClassValue } from "clsx"
+import { DateTime, DateTimeFormatOptions } from "luxon"
+import { Formats } from "next-intl"
+import { datetime, RRule } from 'rrule'
+import { twMerge } from "tailwind-merge"
+import { DUE_MAP, INITIAL_DUE, RECURRENCE_RULE_MAP } from "./constants"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -33,12 +32,6 @@ export function getNow({ timezone = 'utc', keepLocalTime }: { timezone?: string,
   return DateTime.now().setZone(timezone, { keepLocalTime });
 }
 
-// get current time in epoch milliseconds
-export function getNowInMilliseconds() {
-  const now = getNow({});
-  return d2n({ dateTime: now });
-}
-
 // iso timestamp to datetime object, most for storage read
 export function t2d({ timestamp, timezone }: { timestamp: string; timezone: string }) {
   return DateTime.fromISO(timestamp).setZone(timezone);
@@ -61,28 +54,9 @@ export function d2s({ dateTime, format, timezone }: { dateTime: DateTime, format
   return dateTime.setZone(timezone).toLocaleString(DateTime.DATETIME_MED);
 }
 
-// convert datetime object to date string, mostly for display
-export function d2sDate({ dateTime }: { dateTime: DateTime }) {
-  return dateTime.toLocaleString(DateTime.DATE_MED);
-}
-
-// convert datetime object to epoch milliseconds string, mostly for storage write
-export function d2n({ dateTime }: { dateTime: DateTime }) {
-  return dateTime.toMillis().toString();
-}
-
 // compare the date portion of two datetime objects (i.e. same year, month, day)
 export function isSameDate(a: DateTime, b: DateTime) {
   return a.hasSame(b, 'day');
-}
-
-export function normalizeCompletionDate(date: string, timezone: string): string {
-  // If already in ISO format, return as is
-  if (date.includes('T')) {
-    return date;
-  }
-  // Convert from yyyy-MM-dd to ISO format
-  return DateTime.fromFormat(date, 'yyyy-MM-dd', { zone: timezone }).toUTC().toISO()!;
 }
 
 export function getCompletionsForDate({
@@ -438,22 +412,20 @@ export const openWindow = (url: string): boolean => {
   return true
 }
 
-export function deepMerge<T>(a: T, b: T) {
-  return _.merge(a, b, (x: unknown, y: unknown) => {
-    if (_.isArray(a)) {
-      return a.concat(b)
-    }
-  })
-}
-
-export function checkPermission(
-  permissions: Permission[] | undefined,
+export function hasPermission(
+  user: User | undefined,
   resource: 'habit' | 'wishlist' | 'coins',
   action: 'write' | 'interact'
 ): boolean {
-  if (!permissions) return false
-
-  return permissions.some(permission => {
+  if (!user || !user.permissions) {
+    return false;
+  }
+  // If user is admin, they have all permissions.
+  if (user.isAdmin) {
+    return true;
+  }
+  // Otherwise, check specific permissions.
+  return user.permissions.some(permission => {
     switch (resource) {
       case 'habit':
         return permission.habit[action]
@@ -467,27 +439,6 @@ export function checkPermission(
   })
 }
 
-export function uuid() {
-  return uuidv4()
-}
-
-export function hasPermission(
-  currentUser: User | undefined,
-  resource: 'habit' | 'wishlist' | 'coins',
-  action: 'write' | 'interact'
-): boolean {
-  // If no current user, no permissions.
-  if (!currentUser) {
-    return false;
-  }
-  // If user is admin, they have all permissions.
-  if (currentUser.isAdmin) {
-    return true;
-  }
-  // Otherwise, check specific permissions.
-  return checkPermission(currentUser.permissions, resource, action);
-}
-
 /**
  * Prepares a consistent string representation of the data for hashing.
  * It combines all relevant data pieces into a single object and then stringifies it stably.
@@ -499,22 +450,13 @@ export function prepareDataForHashing(
   wishlist: WishlistData,
   users: UserData
 ): string {
-  // Combine all data into a single object.
-  // The order of keys in this object itself doesn't matter due to stableStringify,
-  // but being explicit helps in understanding what's being hashed.
-  const combinedData = {
+  return JSON.stringify({
     settings,
     habits,
     coins,
     wishlist,
     users,
-  };
-  const stringifiedData = stableStringify(combinedData);
-  // Handle cases where stringify might return undefined.
-  if (stringifiedData === undefined) {
-    throw new Error("Failed to stringify data for hashing. stableStringify returned undefined.");
-  }
-  return stringifiedData;
+  });
 }
 
 /**
@@ -538,4 +480,32 @@ export async function generateCryptoHash(dataString: string): Promise<string | n
     console.error(`Failed to generate hash: ${error}`);
     return null;
   }
+}
+
+export function handlePermissionCheck(
+  user: User | SafeUser | undefined,
+  resource: 'habit' | 'wishlist' | 'coins',
+  action: 'write' | 'interact',
+  tCommon: (key: string, values?: Record<string, string | number | Date> | undefined, formats?: Formats | undefined) => string
+): boolean {
+
+  if (!user) {
+    toast({
+      title: tCommon("authenticationRequiredTitle"),
+      description: tCommon("authenticationRequiredDescription"),
+      variant: "destructive",
+    })
+    return false
+  }
+
+  if (!hasPermission(user, resource, action)) {
+    toast({
+      title: tCommon("permissionDeniedTitle"),
+      description: tCommon("permissionDeniedDescription", { action, resource }),
+      variant: "destructive",
+    })
+    return false
+  }
+
+  return true
 }

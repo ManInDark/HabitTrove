@@ -4,10 +4,11 @@ import {
   calculateTotalEarned,
   calculateTotalSpent,
   calculateTransactionsToday,
+  generateCryptoHash,
   getCompletionsForToday,
   getHabitFreq,
-  getTodayInTimezone,
   isHabitDue,
+  prepareDataForHashing,
   roundToInteger,
   t2d
 } from "@/lib/utils";
@@ -121,8 +122,6 @@ export const pomodoroAtom = atom<PomodoroAtom>({
   minimized: false,
 })
 
-import { generateCryptoHash, prepareDataForHashing } from '@/lib/utils';
-
 export const userSelectAtom = atom<boolean>(false)
 export const aboutOpenAtom = atom<boolean>(false)
 
@@ -229,10 +228,3 @@ export const habitsByDateFamily = atomFamily((dateString: string) =>
     return habits.filter(habit => isHabitDue({ habit, timezone, date }));
   })
 );
-
-// Derived atom for daily habits
-export const dailyHabitsAtom = atom((get) => {
-  const settings = get(settingsAtom);
-  const today = getTodayInTimezone(settings.system.timezone);
-  return get(habitsByDateFamily(today));
-});

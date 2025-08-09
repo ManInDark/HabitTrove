@@ -1,5 +1,4 @@
 import { RRule } from "rrule"
-import { uuid } from "./utils"
 import { DateTime } from "luxon"
 
 export type UserId = string
@@ -100,7 +99,7 @@ export interface WishlistData {
 export const getDefaultUsersData = (): UserData => ({
   users: [
     {
-      id: uuid(),
+      id: crypto.randomUUID(),
       username: 'admin',
       // password: '', // No default password for admin initially? Or set a secure default?
       isAdmin: true,

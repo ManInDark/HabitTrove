@@ -4,7 +4,7 @@
 import { useAtom } from 'jotai'
 import { useSession } from "next-auth/react"
 import { usersAtom } from './atoms'
-import { checkPermission } from './utils'
+import { hasPermission } from './utils'
 
 export function useHelpers() {
   const { data: session, status } = useSession()
@@ -30,8 +30,7 @@ export function useHelpers() {
     currentUser,
     usersData,
     status,
-    hasPermission: (resource: 'habit' | 'wishlist' | 'coins', action: 'write' | 'interact') => currentUser?.isAdmin ||
-      checkPermission(currentUser?.permissions, resource, action),
+    hasPermission,
     isIOS: iOS(),
   }
 }

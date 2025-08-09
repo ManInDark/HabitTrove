@@ -12,19 +12,11 @@ import { Suspense } from 'react'
 import { loadCoinsData, loadHabitsData, loadServerSettings, loadSettings, loadUsersData, loadWishlistData } from './actions/data'
 import './globals.css'
 
-// Inter (clean, modern, excellent readability)
-// const inter = Inter({
-//   subsets: ['latin'],
-//   weight: ['400', '500', '600', '700']
-// })
-
 // Clean and contemporary
-const dmSans = DM_Sans({
+const activeFont = DM_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700']
 })
-
-const activeFont = dmSans
 
 export const metadata = {
   title: 'HabitTrove',

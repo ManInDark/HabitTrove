@@ -3,12 +3,9 @@ import {
   cn,
   getTodayInTimezone,
   getNow,
-  getNowInMilliseconds,
   t2d,
   d2t,
   d2s,
-  d2sDate,
-  d2n,
   isSameDate,
   calculateCoinsEarnedToday,
   calculateTotalEarned,
@@ -16,16 +13,15 @@ import {
   calculateCoinsSpentToday,
   isHabitDueToday,
   isHabitDue,
-  uuid,
   isTaskOverdue,
   deserializeRRule,
   serializeRRule,
   convertHumanReadableFrequencyToMachineReadable,
   convertMachineReadableFrequencyToHumanReadable,
   prepareDataForHashing,
-  generateCryptoHash,
   getUnsupportedRRuleReason,
-  roundToInteger
+  roundToInteger,
+  generateCryptoHash
 } from './utils'
 import { CoinTransaction, ParsedResultType, Settings, HabitsData, CoinsData, WishlistData, UserData } from './types'
 import { DateTime } from "luxon";
@@ -178,32 +174,6 @@ describe('isTaskOverdue', () => {
   })
 })
 
-describe('uuid', () => {
-  test('should generate valid UUIDs', () => {
-    const id = uuid()
-    // UUID v4 format: 8-4-4-4-12 hex digits
-    expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
-  })
-
-  test('should generate unique UUIDs', () => {
-    const ids = new Set()
-    for (let i = 0; i < 1000; i++) {
-      ids.add(uuid())
-    }
-    // All 1000 UUIDs should be unique
-    expect(ids.size).toBe(1000)
-  })
-
-  test('should generate v4 UUIDs', () => {
-    const id = uuid()
-    // Version 4 UUID has specific bits set:
-    // - 13th character is '4'
-    // - 17th character is '8', '9', 'a', or 'b'
-    expect(id.charAt(14)).toBe('4')
-    expect('89ab').toContain(id.charAt(19))
-  })
-})
-
 describe('datetime utilities', () => {
   let fixedNow: DateTime;
   let currentDateIndex = 0;
@@ -321,13 +291,6 @@ describe('getNow', () => {
   })
 })
 
-describe('getNowInMilliseconds', () => {
-  test('should return current time in milliseconds', () => {
-    const now = DateTime.now().setZone('UTC')
-    expect(getNowInMilliseconds()).toBe(now.toMillis().toString())
-  })
-})
-
 describe('timestamp conversion utilities', () => {
   const testTimestamp = '2024-01-01T00:00:00.000Z';
   const testDateTime = DateTime.fromISO(testTimestamp);
@@ -350,16 +313,6 @@ describe('timestamp conversion utilities', () => {
 
     const customFormat = d2s({ dateTime: testDateTime, format: 'yyyy-MM-dd', timezone: 'utc' });
     expect(customFormat).toBe('2024-01-01')
-  })
-
-  test('d2sDate should format DateTime as date string', () => {
-    const result = d2sDate({ dateTime: testDateTime });
-    expect(result).toBeString()
-  })
-
-  test('d2n should convert DateTime to milliseconds string', () => {
-    const result = d2n({ dateTime: testDateTime });
-    expect(result).toBe('1704067200000')
   })
 })
 

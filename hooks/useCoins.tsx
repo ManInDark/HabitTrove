@@ -1,50 +1,23 @@
-import { useAtom } from 'jotai';
-import { useState, useEffect, useMemo } from 'react';
-import { useTranslations } from 'next-intl';
-import { calculateCoinsEarnedToday, calculateCoinsSpentToday, calculateTotalEarned, calculateTotalSpent, calculateTransactionsToday, checkPermission, roundToInteger } from '@/lib/utils'
+import { addCoins, removeCoins, saveCoinsData } from '@/app/actions/data';
+import { toast } from '@/hooks/use-toast';
 import {
   coinsAtom,
+  coinsBalanceAtom,
   coinsEarnedTodayAtom,
+  coinsSpentTodayAtom,
+  currentUserAtom,
+  settingsAtom,
   totalEarnedAtom,
   totalSpentAtom,
-  coinsSpentTodayAtom,
   transactionsTodayAtom,
-  coinsBalanceAtom,
-  settingsAtom,
   usersAtom,
-  currentUserAtom,
-} from '@/lib/atoms'
-import { addCoins, removeCoins, saveCoinsData } from '@/app/actions/data'
-import { CoinsData, User } from '@/lib/types'
-import { toast } from '@/hooks/use-toast'
-import { MAX_COIN_LIMIT } from '@/lib/constants'
-
-function handlePermissionCheck(
-  user: User | undefined,
-  resource: 'habit' | 'wishlist' | 'coins',
-  action: 'write' | 'interact',
-  tCommon: (key: string, values?: Record<string, any>) => string
-): boolean {
-  if (!user) {
-    toast({
-      title: tCommon("authenticationRequiredTitle"),
-      description: tCommon("authenticationRequiredDescription"),
-      variant: "destructive",
-    })
-    return false
-  }
-
-  if (!user.isAdmin && !checkPermission(user.permissions, resource, action)) {
-    toast({
-      title: tCommon("permissionDeniedTitle"),
-      description: tCommon("permissionDeniedDescription", { action, resource }),
-      variant: "destructive",
-    })
-    return false
-  }
-
-  return true
-}
+} from '@/lib/atoms';
+import { MAX_COIN_LIMIT } from '@/lib/constants';
+import { CoinsData } from '@/lib/types';
+import { calculateCoinsEarnedToday, calculateCoinsSpentToday, calculateTotalEarned, calculateTotalSpent, calculateTransactionsToday, handlePermissionCheck, roundToInteger } from '@/lib/utils';
+import { useAtom } from 'jotai';
+import { useTranslations } from 'next-intl';
+import { useEffect, useMemo, useState } from 'react';
 
 export function useCoins(options?: { selectedUser?: string }) {
   const t = useTranslations('useCoins');

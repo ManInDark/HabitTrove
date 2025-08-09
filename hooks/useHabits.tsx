@@ -1,54 +1,24 @@
-import { useAtom, atom } from 'jotai'
-import { useTranslations } from 'next-intl'
-import { habitsAtom, coinsAtom, settingsAtom, usersAtom, habitFreqMapAtom, currentUserAtom } from '@/lib/atoms'
 import { addCoins, removeCoins, saveHabitsData } from '@/app/actions/data'
-import { Habit, Permission, SafeUser, User } from '@/lib/types'
+import { ToastAction } from '@/components/ui/toast'
 import { toast } from '@/hooks/use-toast'
-import { DateTime } from 'luxon'
+import { coinsAtom, currentUserAtom, habitFreqMapAtom, habitsAtom, settingsAtom, usersAtom } from '@/lib/atoms'
+import { Habit } from '@/lib/types'
 import {
-  getNowInMilliseconds,
-  getTodayInTimezone,
-  isSameDate,
-  t2d,
+  d2s,
   d2t,
-  getNow,
   getCompletionsForDate,
   getISODate,
-  d2s,
+  getNow,
+  getTodayInTimezone,
+  handlePermissionCheck,
+  isSameDate,
   playSound,
-  checkPermission
+  t2d
 } from '@/lib/utils'
-import { ToastAction } from '@/components/ui/toast'
+import { useAtom } from 'jotai'
 import { Undo2 } from 'lucide-react'
-
-
-function handlePermissionCheck(
-  user: SafeUser | User | undefined,
-  resource: 'habit' | 'wishlist' | 'coins',
-  action: 'write' | 'interact',
-  tCommon: (key: string, values?: Record<string, any>) => string
-): boolean {
-  if (!user) {
-    toast({
-      title: tCommon("authenticationRequiredTitle"),
-      description: tCommon("authenticationRequiredDescription"),
-      variant: "destructive",
-    })
-    return false
-  }
-
-  if (!user.isAdmin && !checkPermission(user.permissions, resource, action)) {
-    toast({
-      title: tCommon("permissionDeniedTitle"),
-      description: tCommon("permissionDeniedDescription", { action, resource }),
-      variant: "destructive",
-    })
-    return false
-  }
-
-  return true
-}
-
+import { DateTime } from 'luxon'
+import { useTranslations } from 'next-intl'
 
 export function useHabits() {
   const t = useTranslations('useHabits');
@@ -106,7 +76,7 @@ export function useHabits() {
         type: habit.isTask ? 'TASK_COMPLETION' : 'HABIT_COMPLETION',
         relatedItemId: habit.id,
       })
-      isTargetReached && playSound()
+      playSound()
       toast({
         title: t("completedTitle"),
         description: t("earnedCoinsDescription", { coinReward: habit.coinReward }),
@@ -207,7 +177,7 @@ export function useHabits() {
     if (!handlePermissionCheck(currentUser, 'habit', 'write', tCommon)) return
     const newHabit = {
       ...habit,
-      id: habit.id || getNowInMilliseconds().toString()
+      id: habit.id || crypto.randomUUID()
     }
     const updatedHabits = habit.id
       ? habitsData.habits.map(h => h.id === habit.id ? newHabit : h)

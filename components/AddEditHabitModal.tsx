@@ -123,7 +123,7 @@ export default function AddEditHabitModal({ onClose, onSave, habit, isTask }: Ad
                     }}
                   />
                 </div>
-              </div>ohsimpson
+              </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="description" className="text-right">
                   {t('descriptionLabel')}

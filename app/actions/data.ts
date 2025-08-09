@@ -21,7 +21,7 @@ import {
   WishlistData,
   WishlistItemType
 } from '@/lib/types';
-import { d2t, generateCryptoHash, getNow, prepareDataForHashing, uuid } from '@/lib/utils';
+import { d2t, generateCryptoHash, getNow, prepareDataForHashing } from '@/lib/utils';
 import { signInSchema } from '@/lib/zod';
 import fs from 'fs/promises';
 import _ from 'lodash';
@@ -32,21 +32,6 @@ import path from 'path';
 type ResourceType = 'habit' | 'wishlist' | 'coins'
 type ActionType = 'write' | 'interact'
 
-
-async function verifyPermission(
-  resource: ResourceType,
-  action: ActionType
-): Promise<void> {
-  // const user = await getCurrentUser()
-
-  // if (!user) throw new PermissionError('User not authenticated')
-  // if (user.isAdmin) return // Admins bypass permission checks
-
-  // if (!checkPermission(user.permissions, resource, action)) {
-  //   throw new PermissionError(`User does not have ${action} permission for ${resource}`)
-  // }
-  return
-}
 
 function getDefaultData<T>(type: DataType): T {
   return DATA_DEFAULTS[type]() as T;
@@ -126,11 +111,13 @@ async function saveData<T>(type: DataType, data: T): Promise<void> {
  */
 async function calculateServerFreshnessToken(): Promise<string | null> {
   try {
-    const settings = await loadSettings();
-    const habits = await loadHabitsData();
-    const coins = await loadCoinsData();
-    const wishlist = await loadWishlistData();
-    const users = await loadUsersData();
+    const [settings, habits, coins, wishlist, users] = await Promise.all([
+      loadSettings(),
+      loadHabitsData(),
+      loadCoinsData(),
+      loadWishlistData(),
+      loadUsersData()
+    ]);
 
     const dataString = prepareDataForHashing(
       settings,
@@ -139,8 +126,7 @@ async function calculateServerFreshnessToken(): Promise<string | null> {
       wishlist,
       users
     );
-    const serverToken = await generateCryptoHash(dataString);
-    return serverToken;
+    return generateCryptoHash(dataString);
   } catch (error) {
     console.error("Error calculating server freshness token:", error);
     throw error;
@@ -165,7 +151,6 @@ export async function loadWishlistItems(): Promise<WishlistItemType[]> {
 }
 
 export async function saveWishlistItems(data: WishlistData): Promise<void> {
-  await verifyPermission('wishlist', 'write')
   const user = await getCurrentUser()
 
   data.items = data.items.map(wishlist => ({
@@ -191,14 +176,11 @@ export async function loadHabitsData(): Promise<HabitsData> {
   if (!user) return getDefaultHabitsData()
   const data = await loadData<HabitsData>('habits')
   return {
-    ...data,
     habits: data.habits.filter(x => user.isAdmin || x.userIds?.includes(user.id))
   }
 }
 
 export async function saveHabitsData(data: HabitsData): Promise<void> {
-  await verifyPermission('habit', 'write')
-
   const user = await getCurrentUser()
   // Create clone of input data
   const newData = _.cloneDeep(data)
@@ -210,7 +192,7 @@ export async function saveHabitsData(data: HabitsData): Promise<void> {
   }))
 
   if (!user?.isAdmin) {
-    const existingData = await loadData<HabitsData>('habits')
+    const existingData = await loadHabitsData();
     const existingHabits = existingData.habits.filter(x => user?.id && !x.userIds?.includes(user?.id))
     newData.habits = [
       ...existingHabits,
@@ -273,11 +255,10 @@ export async function addCoins({
   note?: string
   userId?: string
 }): Promise<CoinsData> {
-  await verifyPermission('coins', type === 'MANUAL_ADJUSTMENT' ? 'write' : 'interact')
   const currentUser = await getCurrentUser()
   const data = await loadCoinsData()
   const newTransaction: CoinTransaction = {
-    id: uuid(),
+    id: crypto.randomUUID(),
     amount,
     type,
     description,
@@ -328,11 +309,10 @@ export async function removeCoins({
   note?: string
   userId?: string
 }): Promise<CoinsData> {
-  await verifyPermission('coins', type === 'MANUAL_ADJUSTMENT' ? 'write' : 'interact')
   const currentUser = await getCurrentUser()
   const data = await loadCoinsData()
   const newTransaction: CoinTransaction = {
-    id: uuid(),
+    id: crypto.randomUUID(),
     amount: -amount,
     type,
     description,
@@ -434,7 +414,7 @@ export async function createUser(formData: FormData): Promise<User> {
 
 
   const newUser: User = {
-    id: uuid(),
+    id: crypto.randomUUID(),
     username,
     password: hashedPassword,
     permissions,

@@ -1,39 +1,12 @@
+import { removeCoins, saveWishlistItems } from '@/app/actions/data'
+import { toast } from '@/hooks/use-toast'
+import { coinsAtom, currentUserAtom, wishlistAtom } from '@/lib/atoms'
+import { WishlistItemType } from '@/lib/types'
+import { handlePermissionCheck } from '@/lib/utils'
+import { celebrations } from '@/utils/celebrations'
 import { useAtom } from 'jotai'
 import { useTranslations } from 'next-intl'
-import { wishlistAtom, coinsAtom, currentUserAtom } from '@/lib/atoms'
-import { saveWishlistItems, removeCoins } from '@/app/actions/data'
-import { toast } from '@/hooks/use-toast'
-import { WishlistItemType, User, SafeUser } from '@/lib/types'
-import { celebrations } from '@/utils/celebrations'
-import { checkPermission } from '@/lib/utils'
 import { useCoins } from './useCoins'
-
-function handlePermissionCheck(
-  user: User | SafeUser | undefined,
-  resource: 'habit' | 'wishlist' | 'coins',
-  action: 'write' | 'interact',
-  tCommon: (key: string, values?: Record<string, any>) => string
-): boolean {
-  if (!user) {
-    toast({
-      title: tCommon("authenticationRequiredTitle"),
-      description: tCommon("authenticationRequiredDescription"),
-      variant: "destructive",
-    })
-    return false
-  }
-  
-  if (!user.isAdmin && !checkPermission(user.permissions, resource, action)) {
-    toast({
-      title: tCommon("permissionDeniedTitle"),
-      description: tCommon("permissionDeniedDescription", { action, resource }),
-      variant: "destructive",
-    })
-    return false
-  }
-  
-  return true
-}
 
 export function useWishlist() {
   const t = useTranslations('useWishlist');
