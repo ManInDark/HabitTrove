@@ -96,52 +96,58 @@ export interface WishlistData {
 }
 
 // Default value functions
-export const getDefaultUsersData = (): UserData => ({
-  users: [
-    {
-      id: crypto.randomUUID(),
-      username: 'admin',
-      // password: '', // No default password for admin initially? Or set a secure default?
-      isAdmin: true,
-      lastNotificationReadTimestamp: undefined, // Initialize as undefined
-    }
-  ]
-});
+export function getDefaultUsersData<UserData>(): UserData {
+  return {
+    users: [
+      {
+        id: crypto.randomUUID(),
+        username: 'admin',
+        // password: '', // No default password for admin initially? Or set a secure default?
+        isAdmin: true,
+        lastNotificationReadTimestamp: undefined, // Initialize as undefined
+      }
+    ]
+  } as UserData;
+};
 
-export const getDefaultHabitsData = (): HabitsData => ({
-  habits: []
-});
+export function getDefaultHabitsData<HabitsData>(): HabitsData {
+  return { habits: [] } as HabitsData;
+}
 
+export function getDefaultTasksData<TasksData>(): TasksData {
+  return { tasks: [] } as TasksData;
+};
 
-export const getDefaultCoinsData = (): CoinsData => ({
-  balance: 0,
-  transactions: []
-});
+export function getDefaultCoinsData<CoinsData>(): CoinsData {
+  return { balance: 0, transactions: [] } as CoinsData;
+};
 
-export const getDefaultWishlistData = (): WishlistData => ({
-  items: []
-});
+export function getDefaultWishlistData<WishlistData>(): WishlistData {
+  return { items: [] } as WishlistData;
+}
 
-export const getDefaultSettings = (): Settings => ({
-  ui: {
-    useNumberFormatting: true,
-    useGrouping: true,
-  },
-  system: {
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    weekStartDay: 1, // Monday
-    autoBackupEnabled: true, // Add this line (default to true)
-    language: 'en', // Default language
-  },
-  profile: {}
-});
+export function getDefaultSettings<Settings>(): Settings {
+  return {
+    ui: {
+      useNumberFormatting: true,
+      useGrouping: true,
+    },
+    system: {
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      weekStartDay: 1, // Monday
+      autoBackupEnabled: true, // Add this line (default to true)
+      language: 'en', // Default language
+    },
+    profile: {}
+  } as Settings;
+};
 
-export const getDefaultServerSettings = (): ServerSettings => ({
-  isDemo: false
-})
+export function getDefaultServerSettings<ServerSettings>(): ServerSettings {
+  return { isDemo: false } as ServerSettings;
+}
 
 // Map of data types to their default values
-export const DATA_DEFAULTS = {
+export const DATA_DEFAULTS: { [key: string]: <T>() => T } = {
   wishlist: getDefaultWishlistData,
   habits: getDefaultHabitsData,
   coins: getDefaultCoinsData,

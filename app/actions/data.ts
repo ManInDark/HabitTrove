@@ -76,7 +76,7 @@ async function loadData<T>(type: DataType): Promise<T> {
       await fs.access(filePath)
     } catch {
       // File doesn't exist, create it with default data
-      const initialData = getDefaultData(type)
+      const initialData = getDefaultData<T>(type)
       await fs.writeFile(filePath, JSON.stringify(initialData, null, 2))
       return initialData as T
     }
@@ -136,7 +136,7 @@ async function calculateServerFreshnessToken(): Promise<string | null> {
 // Wishlist specific functions
 export async function loadWishlistData(): Promise<WishlistData> {
   const user = await getCurrentUser()
-  if (!user) return getDefaultWishlistData()
+  if (!user) return getDefaultWishlistData<WishlistData>()
 
   const data = await loadData<WishlistData>('wishlist')
   return {
@@ -173,7 +173,7 @@ export async function saveWishlistItems(data: WishlistData): Promise<void> {
 // Habits specific functions
 export async function loadHabitsData(): Promise<HabitsData> {
   const user = await getCurrentUser()
-  if (!user) return getDefaultHabitsData()
+  if (!user) return getDefaultHabitsData<HabitsData>()
   const data = await loadData<HabitsData>('habits')
   return {
     habits: data.habits.filter(x => user.isAdmin || x.userIds?.includes(user.id))
@@ -208,14 +208,14 @@ export async function saveHabitsData(data: HabitsData): Promise<void> {
 export async function loadCoinsData(): Promise<CoinsData> {
   try {
     const user = await getCurrentUser()
-    if (!user) return getDefaultCoinsData()
+    if (!user) return getDefaultCoinsData<CoinsData>()
     const data = await loadData<CoinsData>('coins')
     return {
       ...data,
       transactions: user.isAdmin ? data.transactions : data.transactions.filter(x => x.userId === user.id)
     }
   } catch {
-    return getDefaultCoinsData()
+    return getDefaultCoinsData<CoinsData>()
   }
 }
 
@@ -278,7 +278,7 @@ export async function addCoins({
 }
 
 export async function loadSettings(): Promise<Settings> {
-  const defaultSettings = getDefaultSettings()
+  const defaultSettings = getDefaultSettings<Settings>()
 
   try {
     const user = await getCurrentUser()
@@ -370,7 +370,7 @@ export async function loadUsersData(): Promise<UserData> {
   try {
     return await loadData<UserData>('auth')
   } catch {
-    return getDefaultUsersData()
+    return getDefaultUsersData<UserData>()
   }
 }
 

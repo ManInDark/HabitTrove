@@ -942,11 +942,11 @@ describe('convertMachineReadableFrequencyToHumanReadable', () => {
 })
 
 describe('freshness utilities', () => {
-  const mockSettings: Settings = getDefaultSettings();
-  const mockHabits: HabitsData = getDefaultHabitsData();
-  const mockCoins: CoinsData = getDefaultCoinsData();
-  const mockWishlist: WishlistData = getDefaultWishlistData();
-  const mockUsers: UserData = getDefaultUsersData();
+  const mockSettings: Settings = getDefaultSettings<Settings>();
+  const mockHabits: HabitsData = getDefaultHabitsData<HabitsData>();
+  const mockCoins: CoinsData = getDefaultCoinsData<CoinsData>();
+  const mockWishlist: WishlistData = getDefaultWishlistData<WishlistData>();
+  const mockUsers: UserData = getDefaultUsersData<UserData>();
 
   // Add a user to mockUsers for more realistic testing
   mockUsers.users.push({
@@ -991,11 +991,11 @@ describe('freshness utilities', () => {
     });
 
     test('should handle empty data consistently', () => {
-      const emptySettings = getDefaultSettings();
-      const emptyHabits = getDefaultHabitsData();
-      const emptyCoins = getDefaultCoinsData();
-      const emptyWishlist = getDefaultWishlistData();
-      const emptyUsers = getDefaultUsersData();
+      const emptySettings = getDefaultSettings<Settings>();
+      const emptyHabits = getDefaultHabitsData<HabitsData>();
+      const emptyCoins = getDefaultCoinsData<CoinsData>();
+      const emptyWishlist = getDefaultWishlistData<WishlistData>();
+      const emptyUsers = getDefaultUsersData<UserData>();
 
       const string1 = prepareDataForHashing(emptySettings, emptyHabits, emptyCoins, emptyWishlist, emptyUsers);
       const string2 = prepareDataForHashing(emptySettings, emptyHabits, emptyCoins, emptyWishlist, emptyUsers);

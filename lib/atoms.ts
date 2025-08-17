@@ -16,6 +16,7 @@ import { atom } from "jotai";
 import { atomFamily, atomWithStorage } from "jotai/utils";
 import { DateTime } from "luxon";
 import {
+  CoinsData,
   CompletionCache,
   Freq,
   getDefaultCoinsData,
@@ -25,7 +26,12 @@ import {
   getDefaultUsersData,
   getDefaultWishlistData,
   Habit,
-  UserId
+  HabitsData,
+  ServerSettings,
+  Settings,
+  UserData,
+  UserId,
+  WishlistData
 } from "./types";
 
 export interface BrowserSettings {
@@ -40,12 +46,12 @@ export const browserSettingsAtom = atomWithStorage('browserSettings', {
   expandedWishlist: false
 } as BrowserSettings)
 
-export const usersAtom = atom(getDefaultUsersData())
-export const settingsAtom = atom(getDefaultSettings());
-export const habitsAtom = atom(getDefaultHabitsData());
-export const coinsAtom = atom(getDefaultCoinsData());
-export const wishlistAtom = atom(getDefaultWishlistData());
-export const serverSettingsAtom = atom(getDefaultServerSettings());
+export const usersAtom = atom(getDefaultUsersData<UserData>())
+export const settingsAtom = atom(getDefaultSettings<Settings>());
+export const habitsAtom = atom(getDefaultHabitsData<HabitsData>());
+export const coinsAtom = atom(getDefaultCoinsData<CoinsData>());
+export const wishlistAtom = atom(getDefaultWishlistData<WishlistData>());
+export const serverSettingsAtom = atom(getDefaultServerSettings<ServerSettings>());
 
 // Derived atom for coins earned today
 export const coinsEarnedTodayAtom = atom((get) => {
