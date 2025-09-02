@@ -2,8 +2,6 @@
 
 HabitTrove is a gamified habit tracking application that helps you build and maintain positive habits by rewarding you with coins, which you can use to exchange for rewards.
 
-**⚠️ Important:** HabitTrove is currently in beta. Please regularly backup your `data/` directory to prevent any potential data loss.
-
 ## Differences to Upstream
 
 I generally try to keep the `main` branch up to date with upstream features, merging tagged versions and mapping them to `<upstream-version>.0`.
@@ -27,7 +25,7 @@ Differences (as of writing) are:
 - 💰 Create a wishlist of rewards to redeem with earned coins
 - 📊 View your habit completion streaks and statistics
 - 📅 Calendar heatmap to visualize your progress (WIP)
-- 🌍 Multi-language support (English, Español, Deutsch, Français, Русский, 简体中文, 한국어, 日本語)
+- 🌍 Multi-language support (English, Español, Català, Deutsch, Français, Русский, 简体中文, 한국어, 日本語)
 - 🌙 Dark mode support
 - 📲 Progressive Web App (PWA) support
 - 💾 Automatic daily backups with rotation
