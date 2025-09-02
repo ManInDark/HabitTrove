@@ -1,7 +1,3 @@
-import { Habit, SafeUser, User, Permission } from '@/lib/types'
-import { useAtom } from 'jotai'
-import { settingsAtom, pomodoroAtom, browserSettingsAtom, usersAtom, currentUserAtom } from '@/lib/atoms'
-import { getTodayInTimezone, isSameDate, t2d, d2t, getNow, d2s, getCompletionsForToday, isTaskOverdue, convertMachineReadableFrequencyToHumanReadable } from '@/lib/utils'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   DropdownMenu,
@@ -15,11 +11,12 @@ import { convertMachineReadableFrequencyToHumanReadable, getCompletionsForToday,
 import { useAtom } from 'jotai'
 import { Check, Coins, Edit, MoreVertical, Pin, Undo2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { INITIAL_RECURRENCE_RULE, RECURRENCE_RULE_MAP } from '@/lib/constants'
-import { DateTime } from 'luxon'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { hasPermission } from '@/lib/utils'
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import DrawingDisplay from './DrawingDisplay'
 import { HabitContextMenuItems } from './HabitContextMenuItems'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { Button } from './ui/button'
 
 interface HabitItemProps {
   habit: Habit
@@ -111,7 +108,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
             )}
             {habit.drawing && (
               <div className="flex-shrink-0">
-                <DrawingDisplay 
+                <DrawingDisplay
                   drawingData={habit.drawing} 
                   width={120} 
                   height={80}
@@ -128,7 +125,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
             {t('whenLabel', {
               frequency: convertMachineReadableFrequencyToHumanReadable({
                 frequency: habit.frequency,
-                isRecurRule,
+                isRecurRule: pathname.includes("habits"),
                 timezone: settings.system.timezone
               })
             })}
