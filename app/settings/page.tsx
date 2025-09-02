@@ -14,11 +14,14 @@ import { toast } from '@/hooks/use-toast';
 import { serverSettingsAtom, settingsAtom } from '@/lib/atoms';
 import { Settings, WeekDay } from '@/lib/types';
 import { useAtom } from 'jotai';
+
 import { Info } from 'lucide-react'; // Import Info icon
-import { useSession } from 'next-auth/react'; // signOut removed
+
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { saveSettings } from '../actions/data';
+
+import { useSession } from 'next-auth/react'; // signOut removed
+import { useRouter } from 'next/navigation';
 // AlertDialog components and useState removed
 // Trash2 icon removed
 

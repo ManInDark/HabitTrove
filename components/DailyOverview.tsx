@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useHabits } from '@/hooks/useHabits'
 import { browserSettingsAtom, completedHabitsMapAtom, hasTasksAtom, pomodoroAtom, settingsAtom } from '@/lib/atoms'
+import { DESKTOP_DISPLAY_ITEM_COUNT } from '@/lib/constants'
 import { Habit, WishlistItemType } from '@/lib/types'
 import { cn, d2t, getNow, getTodayInTimezone, isHabitDue, isSameDate, isTaskOverdue, t2d } from '@/lib/utils'
 import { useAtom } from 'jotai'
@@ -27,7 +28,7 @@ import ConfirmDialog from './ConfirmDialog'
 import { HabitContextMenuItems } from './HabitContextMenuItems'
 import Linkify from './linkify'
 import { Button } from './ui/button'
-import { DESKTOP_DISPLAY_ITEM_COUNT } from '@/lib/constants'
+import DrawingDisplay from './DrawingDisplay'
 
 interface UpcomingItemsProps {
   habits: Habit[]
@@ -246,6 +247,16 @@ const ItemSection = ({
                               {habit.name}
                             </span>
                           </Link>
+                          {habit.drawing && (
+                            <div className="ml-2 pr-2">
+                              <DrawingDisplay
+                                drawingData={habit.drawing}
+                                width={40}
+                                height={26}
+                                className="border-0"
+                              />
+                            </div>
+                          )}
                         </span>
                       </div>
                     </ContextMenuTrigger>
@@ -458,9 +469,19 @@ export default function DailyOverview({
                               )}
                             >
                               <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm">
-                                  <Linkify>{item.name}</Linkify>
-                                </span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm">
+                                    <Linkify>{item.name}</Linkify>
+                                  </span>
+                                  {item.drawing && (
+                                    <DrawingDisplay
+                                      drawingData={item.drawing}
+                                      width={40}
+                                      height={26}
+                                      className="border-0"
+                                    />
+                                  )}
+                                </div>
                                 <span className="text-xs flex items-center">
                                   <Coins className={cn(
                                     "h-3 w-3 mr-1 transition-all",

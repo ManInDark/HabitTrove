@@ -7,8 +7,11 @@ import { currentUserAtom, usersAtom } from '@/lib/atoms'
 import { MAX_COIN_LIMIT } from '@/lib/constants'
 import { WishlistItemType } from '@/lib/types'
 import { useAtom } from 'jotai'
+import { Brush } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
+import DrawingDisplay from './DrawingDisplay'
+import DrawingModal from './DrawingModal'
 import EmojiPickerButton from './EmojiPickerButton'
 import ModalOverlay from './ModalOverlay'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
@@ -38,6 +41,8 @@ export default function AddEditWishlistItemModal({
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>((editingItem?.userIds || []).filter(id => id !== currentUser?.id))
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [usersData] = useAtom(usersAtom)
+  const [drawing, setDrawing] = useState<string>(editingItem?.drawing || '')
+  const [isDrawingModalOpen, setIsDrawingModalOpen] = useState(false)
 
   useEffect(() => {
     if (editingItem) {
@@ -46,12 +51,14 @@ export default function AddEditWishlistItemModal({
       setCoinCost(editingItem.coinCost)
       setTargetCompletions(editingItem.targetCompletions)
       setLink(editingItem.link || '')
+      setDrawing(editingItem.drawing || '')
     } else {
       setName('')
       setDescription('')
       setCoinCost(1)
       setTargetCompletions(undefined)
       setLink('')
+      setDrawing('')
     }
     setErrors({})
   }, [editingItem])
@@ -100,7 +107,8 @@ export default function AddEditWishlistItemModal({
       coinCost,
       targetCompletions: targetCompletions || undefined,
       link: link.trim() || undefined,
-      userIds: selectedUserIds.length > 0 ? selectedUserIds.concat(currentUser?.id || []) : (currentUser && [currentUser.id])
+      userIds: selectedUserIds.length > 0 ? selectedUserIds.concat(currentUser?.id || []) : (currentUser && [currentUser.id]),
+      drawing: drawing && drawing !== '[]' ? drawing : undefined
     }
 
     if (editingItem) {
@@ -116,7 +124,11 @@ export default function AddEditWishlistItemModal({
   return (
     <>
       <ModalOverlay />
-      <Dialog open={true} onOpenChange={handleClose} modal={false}>
+      <Dialog open={true} onOpenChange={(open) => {
+        if (!open && !isDrawingModalOpen) {
+          handleClose()
+        }
+      }} modal={false}>
         <DialogContent> {/* DialogContent from shadcn/ui is typically z-50, ModalOverlay is z-40 */}
           <DialogHeader>
             <DialogTitle>{editingItem ? t('editTitle') : t('addTitle')}</DialogTitle>
@@ -267,6 +279,38 @@ export default function AddEditWishlistItemModal({
                   )}
                 </div>
               </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right">
+                  {t('drawingLabel')}
+                </Label>
+                <div className="col-span-3">
+                  <div className="flex gap-4 items-center">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        setIsDrawingModalOpen(true)
+                      }}
+                      className="flex-1 justify-start"
+                    >
+                      <Brush className="h-4 w-4 mr-2" />
+                      {drawing ? t('editDrawing') : t('addDrawing')}
+                    </Button>
+                    {drawing && (
+                      <div className="flex-shrink-0">
+                        <DrawingDisplay
+                          drawingData={drawing}
+                          width={80}
+                          height={53}
+                          className=""
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
               {usersData.users && usersData.users.length > 1 && (
                 <div className="grid grid-cols-4 items-center gap-4">
                   <div className="flex items-center justify-end gap-2">
@@ -306,6 +350,13 @@ export default function AddEditWishlistItemModal({
           </form>
         </DialogContent>
       </Dialog>
+      <DrawingModal
+        isOpen={isDrawingModalOpen}
+        onClose={() => setIsDrawingModalOpen(false)}
+        onSave={(drawingData) => setDrawing(drawingData)}
+        initialDrawing={drawing}
+        title={name}
+      />
     </>
   )
 }

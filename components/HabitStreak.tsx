@@ -8,6 +8,7 @@ import { useAtom } from 'jotai';
 import { useTranslations } from 'next-intl';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
+
 interface HabitStreakProps {
   habits: Habit[]
 }
