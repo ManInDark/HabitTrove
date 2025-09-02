@@ -38,7 +38,7 @@ export default function SettingsPage() {
 
   // handleDeleteAccount function removed
 
-  if (!settings) return null
+  if (!settings) return <></>
 
   return (
     <>

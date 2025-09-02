@@ -177,7 +177,7 @@ export default function PomodoroTimer() {
 
   const progress = (timeLeft / currentTimerRef.current.duration) * 100
 
-  if (!show) return null
+  if (!show) return <></>
 
   return (
     <div className="fixed bottom-20 right-4 lg:bottom-4 bg-background border rounded-lg shadow-lg">

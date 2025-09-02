@@ -29,13 +29,13 @@ interface WishlistItemProps {
 }
 
 const renderUserAvatars = (item: WishlistItemType, currentUser: User | null, usersData: { users: User[] }) => {
-  if (!item.userIds || item.userIds.length <= 1) return null;
+  if (!item.userIds || item.userIds.length <= 1) return <></>;
 
   return (
     <div className="flex -space-x-2 ml-2 flex-shrink-0">
       {item.userIds?.filter((u) => u !== currentUser?.id).map(userId => {
         const user = usersData.users.find(u => u.id === userId)
-        if (!user) return null
+        if (!user) return <></>;
         return (
           <Avatar key={user.id} className="h-6 w-6">
             <AvatarImage src={user?.avatarPath && `/api/avatars/${user.avatarPath.split('/').pop()}` || ""} />

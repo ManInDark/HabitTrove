@@ -9,7 +9,7 @@ export default function TodayEarnedCoins({ longFormat }: { longFormat?: boolean 
   const [settings] = useAtom(settingsAtom)
   const { coinsEarnedToday } = useCoins()
 
-  if (coinsEarnedToday <= 0) return null
+  if (coinsEarnedToday <= 0) return <></>;
 
   return (
     <span className="text-md text-green-600 dark:text-green-400 font-medium mt-1">

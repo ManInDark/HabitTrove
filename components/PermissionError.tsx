@@ -8,7 +8,7 @@ export default async function PermissionError() {
 
   // If everything is fine, render nothing
   if (permissionResult.success) {
-    return null
+    return <></>
   }
 
   // Get error message

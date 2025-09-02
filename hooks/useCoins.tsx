@@ -90,20 +90,20 @@ export function useCoins(options?: { selectedUser?: string }) {
   ]);
 
   const add = async (amount: number, description: string, note?: string) => {
-    if (!handlePermissionCheck(currentUser, 'coins', 'write', tCommon)) return null
+    if (!handlePermissionCheck(currentUser, 'coins', 'write', tCommon)) return <></>;
     if (isNaN(amount) || amount <= 0) {
       toast({
         title: t("invalidAmountTitle"),
         description: t("invalidAmountDescription")
       })
-      return null
+      return <></>;
     }
     if (amount > MAX_COIN_LIMIT) {
       toast({
         title: t("invalidAmountTitle"),
         description: t("maxAmountExceededDescription", { max: MAX_COIN_LIMIT })
       })
-      return null
+      return <></>;
     }
 
     const data = await addCoins({
@@ -119,21 +119,21 @@ export function useCoins(options?: { selectedUser?: string }) {
   }
 
   const remove = async (amount: number, description: string, note?: string) => {
-    if (!handlePermissionCheck(currentUser, 'coins', 'write', tCommon)) return null
+    if (!handlePermissionCheck(currentUser, 'coins', 'write', tCommon)) return <></>;
     const numAmount = Math.abs(amount)
     if (isNaN(numAmount) || numAmount <= 0) {
       toast({
         title: t("invalidAmountTitle"),
         description: t("invalidAmountDescription")
       })
-      return null
+      return <></>;
     }
     if (numAmount > MAX_COIN_LIMIT) {
       toast({
         title: t("invalidAmountTitle"),
         description: t("maxAmountExceededDescription", { max: MAX_COIN_LIMIT })
       })
-      return null
+      return <></>;
     }
 
     const data = await removeCoins({
@@ -149,14 +149,14 @@ export function useCoins(options?: { selectedUser?: string }) {
   }
 
   const updateNote = async (transactionId: string, note: string) => {
-    if (!handlePermissionCheck(currentUser, 'coins', 'write', tCommon)) return null
+    if (!handlePermissionCheck(currentUser, 'coins', 'write', tCommon)) return <></>;
     const transaction = coins.transactions.find(t => t.id === transactionId)
     if (!transaction) {
       toast({
         title: tCommon("errorTitle"),
         description: t("transactionNotFoundDescription")
       })
-      return null
+      return <></>;
     }
 
     const updatedTransaction = {
