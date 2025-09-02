@@ -430,12 +430,18 @@
     "invalidAmountDescription": "Please enter a valid positive number",
     "successTitle": "Success",
     "transactionNotFoundDescription": "Transaction not found",
-    "maxAmountExceededDescription": "The amount cannot exceed {max}.",
-    "transactionNotFoundDescription": "Transaction not found",
     "maxAmountExceededDescription": "The amount cannot exceed {max}."
   },
   "Warning": {
     "areYouSure": "Are you sure?",
     "cancel": "Cancel"
+  },
+  "DrawingModal": {
+    "saveDrawingButton": "Save",
+    "cancelButton": "Cancel",
+    "clearButton": "Clear",
+    "undoButton": "Undo",
+    "colorLabel": "Color",
+    "thicknessLabel": "Thickness"
   }
 }
