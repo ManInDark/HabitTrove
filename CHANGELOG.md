@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.30
+
+### Fixed
+
+* Security: Updated Next.js from 15.2.3 to 15.5.7 to address CVE-2025-55182 (https://github.com/vercel/next.js/security/advisories/GHSA-9qr9-h5gf-34mp)
+
 ## Version 0.2.29
 
 ### Added
