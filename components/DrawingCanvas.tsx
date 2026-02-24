@@ -66,7 +66,23 @@ export default function DrawingCanvas({ initialDrawing, onSave, onClear }: Drawi
   }, [initialDrawing])
 
   useEffect(() => {
-    redrawCanvas()
+    const canvas = canvasRef.current
+    if (!canvas || !contextRef.current) return
+
+    const context = contextRef.current
+    context.clearRect(0, 0, canvas.width, canvas.height)
+
+    drawingHistory.forEach(stroke => {
+      if (stroke.points.length === 0) return
+      context.beginPath()
+      context.strokeStyle = stroke.color
+      context.lineWidth = stroke.thickness
+      context.moveTo(stroke.points[0].x, stroke.points[0].y)
+      stroke.points.forEach(point => {
+        context.lineTo(point.x, point.y)
+      })
+      context.stroke()
+    })
   }, [drawingHistory])
 
   const getMousePos = (event: React.MouseEvent) => {
@@ -123,26 +139,6 @@ export default function DrawingCanvas({ initialDrawing, onSave, onClear }: Drawi
     }
     setIsDrawing(false)
     contextRef.current?.closePath()
-  }
-
-  const redrawCanvas = () => {
-    const canvas = canvasRef.current
-    if (!canvas || !contextRef.current) return
-
-    const context = contextRef.current
-    context.clearRect(0, 0, canvas.width, canvas.height)
-
-    drawingHistory.forEach(stroke => {
-      if (stroke.points.length === 0) return
-      context.beginPath()
-      context.strokeStyle = stroke.color
-      context.lineWidth = stroke.thickness
-      context.moveTo(stroke.points[0].x, stroke.points[0].y)
-      stroke.points.forEach(point => {
-        context.lineTo(point.x, point.y)
-      })
-      context.stroke()
-    })
   }
 
   const handleUndo = () => {
