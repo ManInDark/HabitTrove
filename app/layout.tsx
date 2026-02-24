@@ -48,23 +48,6 @@ export default async function RootLayout({
     // set suppressHydrationWarning to true to prevent hydration errors when using ThemeProvider (https://ui.shadcn.com/docs/dark-mode/next)
     <html lang={locale} suppressHydrationWarning>
       <body className={activeFont.className}>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                      console.log('ServiceWorker registration successful');
-                    })
-                    .catch(err => {
-                      console.log('ServiceWorker registration failed: ', err);
-                    });
-                });
-              }
-            `,
-          }}
-        />
         <JotaiProvider>
           <Suspense fallback={<LoadingSpinner />}>
             <JotaiHydrate
