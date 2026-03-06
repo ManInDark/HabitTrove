@@ -1,22 +1,16 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { completedHabitsMapAtom, hasTasksAtom, settingsAtom } from '@/lib/atoms'; // Added completedHabitsMapAtom
+import { completedHabitsMapAtom, settingsAtom } from '@/lib/atoms';
 import { Habit } from '@/lib/types';
-import { d2s, getNow } from '@/lib/utils'; // Removed getCompletedHabitsForDate
+import { d2s, getNow } from '@/lib/utils';
 import { useAtom } from 'jotai';
 import { useTranslations } from 'next-intl';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-
-interface HabitStreakProps {
-  habits: Habit[]
-}
-
-export default function HabitStreak({ habits }: HabitStreakProps) {
+export default function HabitStreak({ habits }: { habits: Habit[] }) {
   const t = useTranslations('HabitStreak');
   const [settings] = useAtom(settingsAtom)
-  const [hasTasks] = useAtom(hasTasksAtom)
   const [completedHabitsMap] = useAtom(completedHabitsMapAtom) // Use the atom
 
   // Get the last 7 days of data
@@ -72,7 +66,7 @@ export default function HabitStreak({ habits }: HabitStreakProps) {
                 strokeWidth={2}
                 dot={false}
               />
-              {hasTasks && (
+              {habits.some(habit => habit.isTask === true) && (
                 <Line
                   type="monotone"
                   name={t('tooltipTasksLabel')}

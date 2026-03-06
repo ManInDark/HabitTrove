@@ -1,12 +1,13 @@
 import { addCoins, removeCoins, saveHabitsData } from '@/app/actions/data'
 import { ToastAction } from '@/components/ui/toast'
 import { toast } from '@/hooks/use-toast'
-import { coinsAtom, currentUserAtom, habitFreqMapAtom, habitsAtom, settingsAtom, usersAtom } from '@/lib/atoms'
-import { Habit } from '@/lib/types'
+import { coinsAtom, currentUserAtom, habitsAtom, settingsAtom } from '@/lib/atoms'
+import { Freq, Habit } from '@/lib/types'
 import {
   d2s,
   d2t,
   getCompletionsForDate,
+  getHabitFreq,
   getISODate,
   getNow,
   getTodayInTimezone,
@@ -23,12 +24,15 @@ import { useTranslations } from 'next-intl'
 export function useHabits() {
   const t = useTranslations('useHabits');
   const tCommon = useTranslations('Common');
-  const [usersData] = useAtom(usersAtom)
   const [currentUser] = useAtom(currentUserAtom)
   const [habitsData, setHabitsData] = useAtom(habitsAtom)
   const [coins, setCoins] = useAtom(coinsAtom)
   const [settings] = useAtom(settingsAtom)
-  const [habitFreqMap] = useAtom(habitFreqMapAtom)
+  // const [habitFreqMap] = useAtom(habitFreqMapAtom)
+  const habitFreqMap = new Map<string, Freq>();
+  habitsData.habits.forEach(habit => {
+    habitFreqMap.set(habit.id, getHabitFreq(habit));
+  })
 
   const completeHabit = async (habit: Habit) => {
     if (!handlePermissionCheck(currentUser, 'habit', 'interact', tCommon)) return

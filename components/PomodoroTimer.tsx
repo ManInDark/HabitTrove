@@ -3,8 +3,8 @@
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { useHabits } from '@/hooks/useHabits'
-import { habitsAtom, pomodoroAtom, pomodoroTodayCompletionsAtom } from '@/lib/atoms'
-import { cn } from '@/lib/utils'
+import { habitsAtom, pomodoroAtom, settingsAtom } from '@/lib/atoms'
+import { cn, getTodayCompletions } from '@/lib/utils'
 import { useAtom } from 'jotai'
 import { Clock, Minus, Pause, Play, RotateCw, SkipForward, X } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -41,12 +41,13 @@ export default function PomodoroTimer() {
   const [pomo, setPomo] = useAtom(pomodoroAtom)
   const { show, selectedHabitId, autoStart, minimized } = pomo
   const [habitsData] = useAtom(habitsAtom)
+  const [settingsData] = useAtom(settingsAtom)
   const { completeHabit } = useHabits()
   const selectedHabit = selectedHabitId ? habitsData.habits.find(habit => habit.id === selectedHabitId) : null
   const [timeLeft, setTimeLeft] = useState(PomoConfigs.focus.duration)
   const [state, setState] = useState<'started' | 'stopped' | 'paused'>(autoStart ? 'started' : 'stopped')
   const wakeLock = useRef<WakeLockSentinel | null>(null)
-  const [todayCompletions] = useAtom(pomodoroTodayCompletionsAtom)
+  const todayCompletions = getTodayCompletions(pomo, habitsData, settingsData);
   const currentTimerRef = useRef<PomoConfig>(PomoConfigs.focus)
   const [currentLabel, setCurrentLabel] = useState(() => {
     const labels = currentTimerRef.current.getLabels();

@@ -13,22 +13,22 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useHabits } from '@/hooks/useHabits'
-import { browserSettingsAtom, completedHabitsMapAtom, hasTasksAtom, pomodoroAtom, settingsAtom } from '@/lib/atoms'
+import { browserSettingsAtom, completedHabitsMapAtom, settingsAtom } from '@/lib/atoms'
 import { DESKTOP_DISPLAY_ITEM_COUNT } from '@/lib/constants'
 import { Habit, WishlistItemType } from '@/lib/types'
 import { cn, d2t, getNow, getTodayInTimezone, isHabitDue, isSameDate, isTaskOverdue, t2d } from '@/lib/utils'
 import { useAtom } from 'jotai'
-import { AlertTriangle, ArrowRight, ChevronDown, ChevronUp, Circle, CircleCheck, Coins, Pin, Plus } from 'lucide-react'; // Removed unused icons
+import { AlertTriangle, ArrowRight, ChevronDown, ChevronUp, Circle, CircleCheck, Coins, Pin, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useState } from 'react'
 import AddEditHabitModal from './AddEditHabitModal'
 import CompletionCountBadge from './CompletionCountBadge'
 import ConfirmDialog from './ConfirmDialog'
+import DrawingDisplay from './DrawingDisplay'
 import { HabitContextMenuItems } from './HabitContextMenuItems'
 import Linkify from './linkify'
 import { Button } from './ui/button'
-import DrawingDisplay from './DrawingDisplay'
 
 interface UpcomingItemsProps {
   habits: Habit[]
@@ -54,8 +54,7 @@ const ItemSection = ({
   addNewItem,
 }: ItemSectionProps) => {
   const t = useTranslations('DailyOverview');
-  const { completeHabit, undoComplete, saveHabit, deleteHabit, archiveHabit, habitFreqMap } = useHabits();
-  const [_, setPomo] = useAtom(pomodoroAtom);
+  const { completeHabit, undoComplete, saveHabit, deleteHabit, habitFreqMap } = useHabits();
   const [browserSettings, setBrowserSettings] = useAtom(browserSettingsAtom);
   const [settings] = useAtom(settingsAtom);
   const [completedHabitsMap] = useAtom(completedHabitsMapAtom);
@@ -397,8 +396,6 @@ export default function DailyOverview({
       return a.coinCost - b.coinCost
     })
 
-  const [hasTasks] = useAtom(hasTasksAtom)
-  const [, setPomo] = useAtom(pomodoroAtom)
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean,
     isTask: boolean
@@ -416,7 +413,7 @@ export default function DailyOverview({
         <CardContent>
           <div className="space-y-6">
             {/* Tasks Section */}
-            {hasTasks && (
+            {habits.some(habit => habit.isTask === true) && (
               <ItemSection
                 title={t('dailyTasksTitle')}
                 items={dailyTasks}

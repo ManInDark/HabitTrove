@@ -114,7 +114,7 @@ export const coinsBalanceAtom = atom((get) => {
 });
 
 /* transient atoms */
-interface PomodoroAtom {
+export interface PomodoroAtom {
   show: boolean
   selectedHabitId: string | null
   autoStart: boolean
@@ -190,38 +190,6 @@ export const completedHabitsMapAtom = atom((get) => {
 
   return map;
 });
-
-// Derived atom for habit frequency map
-export const habitFreqMapAtom = atom((get) => {
-  const habits = get(habitsAtom).habits;
-  const map = new Map<string, Freq>();
-  habits.forEach(habit => {
-    map.set(habit.id, getHabitFreq(habit));
-  });
-  return map;
-});
-
-export const pomodoroTodayCompletionsAtom = atom((get) => {
-  const pomo = get(pomodoroAtom)
-  const habits = get(habitsAtom)
-  const settings = get(settingsAtom)
-
-  if (!pomo.selectedHabitId) return 0
-
-  const selectedHabit = habits.habits.find(h => h.id === pomo.selectedHabitId!)
-  if (!selectedHabit) return 0
-
-  return getCompletionsForToday({
-    habit: selectedHabit,
-    timezone: settings.system.timezone
-  })
-})
-
-// Derived atom to check if any habits are tasks
-export const hasTasksAtom = atom((get) => {
-  const habits = get(habitsAtom)
-  return habits.habits.some(habit => habit.isTask === true)
-})
 
 // Atom family for habits by specific date
 export const habitsByDateFamily = atomFamily((dateString: string) =>

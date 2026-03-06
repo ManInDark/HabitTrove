@@ -4,7 +4,7 @@ import CompletionCountBadge from '@/components/CompletionCountBadge'
 import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useHabits } from '@/hooks/useHabits'
-import { completedHabitsMapAtom, habitsAtom, hasTasksAtom, settingsAtom } from '@/lib/atoms'
+import { completedHabitsMapAtom, habitsAtom, settingsAtom } from '@/lib/atoms'
 import { Habit } from '@/lib/types'
 import { d2s, getCompletionsForDate, getISODate, getNow, isHabitDue } from '@/lib/utils'
 import { useAtom } from 'jotai'
@@ -29,7 +29,6 @@ export default function HabitCalendar() {
   const [selectedDateTime, setSelectedDateTime] = useState<DateTime>(getNow({ timezone: settings.system.timezone }))
   const selectedDate = selectedDateTime.toFormat("yyyy-MM-dd")
   const [habitsData] = useAtom(habitsAtom)
-  const [hasTasks] = useAtom(hasTasksAtom)
   const habits = habitsData.habits
 
   const [completedHabitsMap] = useAtom(completedHabitsMapAtom)
@@ -83,7 +82,7 @@ export default function HabitCalendar() {
           <CardContent>
             {selectedDateTime && (
               <div className="space-y-8">
-                {hasTasks && (
+                {habits.some(habit => habit.isTask === true) && (
                   <div className="pt-2 border-t">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">{t('tasksSectionTitle')}</h3>

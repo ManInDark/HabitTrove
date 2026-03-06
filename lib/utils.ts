@@ -6,6 +6,7 @@ import { DateTime, DateTimeFormatOptions } from "luxon"
 import { Formats } from "next-intl"
 import { datetime, RRule } from 'rrule'
 import { twMerge } from "tailwind-merge"
+import { PomodoroAtom } from "./atoms"
 import { DUE_MAP, INITIAL_DUE, RECURRENCE_RULE_MAP } from "./constants"
 
 export function cn(...inputs: ClassValue[]) {
@@ -82,6 +83,20 @@ export function getCompletionsForToday({
   timezone: string
 }): number {
   return getCompletionsForDate({ habit, date: getTodayInTimezone(timezone), timezone })
+}
+
+export function getTodayCompletions({ selectedHabitId }: PomodoroAtom, { habits }: HabitsData, { system: { timezone } }: Settings): number {
+  if (!selectedHabitId)
+    return 0;
+
+  const selectedHabit = habits.find(h => h.id === selectedHabitId!);
+  if (!selectedHabit)
+    return 0;
+
+  return getCompletionsForToday({
+    habit: selectedHabit,
+    timezone: timezone
+  });
 }
 
 export function getCompletedHabitsForDate({
