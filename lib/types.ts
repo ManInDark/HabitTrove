@@ -210,3 +210,16 @@ export interface ParsedFrequencyResult {
   message: string | null
   result: ParsedResultType
 }
+
+export interface PomodoroAtom {
+  show: boolean
+  selectedHabitId: string | null
+  autoStart: boolean
+  minimized: boolean
+}
+
+export interface BrowserSettings {
+  expandedHabits: boolean
+  expandedTasks: boolean
+  expandedWishlist: boolean
+}

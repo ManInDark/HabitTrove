@@ -10,7 +10,7 @@ import { useCoins } from '@/hooks/useCoins'
 import { currentUserAtom, settingsAtom, usersAtom } from '@/lib/atoms'
 import { MAX_COIN_LIMIT } from '@/lib/constants'
 import { TransactionType } from '@/lib/types'
-import { d2s, t2d } from '@/lib/utils'
+import { calculateTransactionsToday, d2s, t2d } from '@/lib/utils'
 import { useAtom } from 'jotai'
 import { History } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -33,8 +33,7 @@ export default function CoinsManager() {
     coinsEarnedToday,
     totalEarned,
     totalSpent,
-    coinsSpentToday,
-    transactionsToday
+    coinsSpentToday
   } = useCoins({ selectedUser })
   const [settings] = useAtom(settingsAtom)
   const [usersData] = useAtom(usersAtom)
@@ -252,7 +251,7 @@ export default function CoinsManager() {
               <div className="p-4 rounded-lg bg-orange-100 dark:bg-orange-900">
                 <div className="text-sm text-orange-800 dark:text-orange-100 mb-1">{t('todaysTransactionsLabel')}</div>
                 <div className="text-2xl font-bold text-orange-900 dark:text-orange-50">
-                  {transactionsToday} 📊
+                  {calculateTransactionsToday(transactions, settings.system.timezone)} 📊
                 </div>
               </div>
             </div>

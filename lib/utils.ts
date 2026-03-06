@@ -1,12 +1,11 @@
 import { toast } from "@/hooks/use-toast"
-import { CoinsData, CoinTransaction, Freq, Habit, HabitsData, ParsedFrequencyResult, ParsedResultType, SafeUser, Settings, User, UserData, WishlistData } from '@/lib/types'
+import { CoinsData, CoinTransaction, Freq, Habit, HabitsData, ParsedFrequencyResult, ParsedResultType, PomodoroAtom, SafeUser, Settings, User, UserData, WishlistData } from '@/lib/types'
 import * as chrono from 'chrono-node'
 import { clsx, type ClassValue } from "clsx"
 import { DateTime, DateTimeFormatOptions } from "luxon"
 import { Formats } from "next-intl"
 import { datetime, RRule } from 'rrule'
 import { twMerge } from "tailwind-merge"
-import { PomodoroAtom } from "./atoms"
 import { DUE_MAP, INITIAL_DUE, RECURRENCE_RULE_MAP } from "./constants"
 
 export function cn(...inputs: ClassValue[]) {

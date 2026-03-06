@@ -3,10 +3,7 @@ import {
   calculateCoinsSpentToday,
   calculateTotalEarned,
   calculateTotalSpent,
-  calculateTransactionsToday,
   generateCryptoHash,
-  getCompletionsForToday,
-  getHabitFreq,
   isHabitDue,
   prepareDataForHashing,
   roundToInteger,
@@ -16,9 +13,9 @@ import { atom } from "jotai";
 import { atomFamily, atomWithStorage } from "jotai/utils";
 import { DateTime } from "luxon";
 import {
+  BrowserSettings,
   CoinsData,
   CompletionCache,
-  Freq,
   getDefaultCoinsData,
   getDefaultHabitsData,
   getDefaultServerSettings,
@@ -27,18 +24,13 @@ import {
   getDefaultWishlistData,
   Habit,
   HabitsData,
+  PomodoroAtom,
   ServerSettings,
   Settings,
   UserData,
   UserId,
   WishlistData
 } from "./types";
-
-export interface BrowserSettings {
-  expandedHabits: boolean
-  expandedTasks: boolean
-  expandedWishlist: boolean
-}
 
 export const browserSettingsAtom = atomWithStorage('browserSettings', {
   expandedHabits: false,
@@ -47,11 +39,21 @@ export const browserSettingsAtom = atomWithStorage('browserSettings', {
 } as BrowserSettings)
 
 export const usersAtom = atom(getDefaultUsersData<UserData>())
+export const currentUserIdAtom = atom<UserId | undefined>(undefined);
 export const settingsAtom = atom(getDefaultSettings<Settings>());
 export const habitsAtom = atom(getDefaultHabitsData<HabitsData>());
 export const coinsAtom = atom(getDefaultCoinsData<CoinsData>());
 export const wishlistAtom = atom(getDefaultWishlistData<WishlistData>());
 export const serverSettingsAtom = atom(getDefaultServerSettings<ServerSettings>());
+export const userSelectAtom = atom<boolean>(false)
+export const aboutOpenAtom = atom<boolean>(false)
+
+export const pomodoroAtom = atom<PomodoroAtom>({
+  show: false,
+  selectedHabitId: null,
+  autoStart: true,
+  minimized: false,
+})
 
 // Derived atom for coins earned today
 export const coinsEarnedTodayAtom = atom((get) => {
@@ -83,53 +85,11 @@ export const coinsSpentTodayAtom = atom((get) => {
   return roundToInteger(value);
 });
 
-// Derived atom for transactions today
-export const transactionsTodayAtom = atom((get) => {
-  const coins = get(coinsAtom);
-  const settings = get(settingsAtom);
-  return calculateTransactionsToday(coins.transactions, settings.system.timezone);
-});
-
-// Atom to store the current logged-in user's ID.
-// This should be set by your application when the user session is available.
-export const currentUserIdAtom = atom<UserId | undefined>(undefined);
-
 export const currentUserAtom = atom((get) => {
   const currentUserId = get(currentUserIdAtom);
   const users = get(usersAtom);
   return users.users.find(user => user.id === currentUserId);
 })
-
-// Derived atom for current balance for the logged-in user
-export const coinsBalanceAtom = atom((get) => {
-  const loggedInUserId = get(currentUserIdAtom);
-  if (!loggedInUserId) {
-    return 0; // No user logged in or ID not set, so balance is 0
-  }
-  const coins = get(coinsAtom);
-  const balance = coins.transactions
-    .filter(transaction => transaction.userId === loggedInUserId)
-    .reduce((sum, transaction) => sum + transaction.amount, 0);
-  return roundToInteger(balance);
-});
-
-/* transient atoms */
-export interface PomodoroAtom {
-  show: boolean
-  selectedHabitId: string | null
-  autoStart: boolean
-  minimized: boolean
-}
-
-export const pomodoroAtom = atom<PomodoroAtom>({
-  show: false,
-  selectedHabitId: null,
-  autoStart: true,
-  minimized: false,
-})
-
-export const userSelectAtom = atom<boolean>(false)
-export const aboutOpenAtom = atom<boolean>(false)
 
 /**
  * Asynchronous atom that calculates a freshness token (hash) based on the current client-side data.
@@ -147,33 +107,25 @@ export const clientFreshnessTokenAtom = atom(async (get) => {
   return hash;
 });
 
-// Derived atom for completion cache
-export const completionCacheAtom = atom((get) => {
+// Derived atom for completed habits by date, using the cache
+export const completedHabitsMapAtom = atom((get) => {
   const habits = get(habitsAtom).habits;
+  const completionCache: CompletionCache = {};
+  const map = new Map<string, Habit[]>();
   const timezone = get(settingsAtom).system.timezone;
-  const cache: CompletionCache = {};
 
   habits.forEach(habit => {
     habit.completions.forEach(utcTimestamp => {
       const localDate = t2d({ timestamp: utcTimestamp, timezone })
         .toFormat('yyyy-MM-dd');
 
-      if (!cache[localDate]) {
-        cache[localDate] = {};
+      if (!completionCache[localDate]) {
+        completionCache[localDate] = {};
       }
 
-      cache[localDate][habit.id] = (cache[localDate][habit.id] || 0) + 1;
+      completionCache[localDate][habit.id] = (completionCache[localDate][habit.id] || 0) + 1;
     });
   });
-
-  return cache;
-});
-
-// Derived atom for completed habits by date, using the cache
-export const completedHabitsMapAtom = atom((get) => {
-  const habits = get(habitsAtom).habits;
-  const completionCache = get(completionCacheAtom);
-  const map = new Map<string, Habit[]>();
 
   // For each date in the cache
   Object.entries(completionCache).forEach(([dateKey, habitCompletions]) => {

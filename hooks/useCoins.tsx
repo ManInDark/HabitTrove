@@ -2,15 +2,14 @@ import { addCoins, removeCoins, saveCoinsData } from '@/app/actions/data';
 import { toast } from '@/hooks/use-toast';
 import {
   coinsAtom,
-  coinsBalanceAtom,
   coinsEarnedTodayAtom,
   coinsSpentTodayAtom,
   currentUserAtom,
+  currentUserIdAtom,
   settingsAtom,
   totalEarnedAtom,
   totalSpentAtom,
-  transactionsTodayAtom,
-  usersAtom,
+  usersAtom
 } from '@/lib/atoms';
 import { MAX_COIN_LIMIT } from '@/lib/constants';
 import { CoinsData } from '@/lib/types';
@@ -24,27 +23,26 @@ export function useCoins(options?: { selectedUser?: string }) {
   const tCommon = useTranslations('Common');
   const [coins, setCoins] = useAtom(coinsAtom)
   const [settings] = useAtom(settingsAtom)
-  const [users] = useAtom(usersAtom)
+  const [{users}] = useAtom(usersAtom)
   const [currentUser] = useAtom(currentUserAtom)
-  const [allCoinsData] = useAtom(coinsAtom) // All coin transactions
-  const [loggedInUserBalance] = useAtom(coinsBalanceAtom) // Balance of the *currently logged-in* user
+  const [coinsData] = useAtom(coinsAtom) // All coin transactions
+  const [loggedInUserId] = useAtom(currentUserIdAtom);
+  const loggedInUserBalance = loggedInUserId ? coins.transactions.filter(transaction => transaction.userId === loggedInUserId).reduce((sum, transaction) => sum + transaction.amount, 0) : 0;
   const [atomCoinsEarnedToday] = useAtom(coinsEarnedTodayAtom);
   const [atomTotalEarned] = useAtom(totalEarnedAtom)
   const [atomTotalSpent] = useAtom(totalSpentAtom)
   const [atomCoinsSpentToday] = useAtom(coinsSpentTodayAtom);
-  const [atomTransactionsToday] = useAtom(transactionsTodayAtom);
-  const targetUser = options?.selectedUser ? users.users.find(u => u.id === options.selectedUser) : currentUser
+  const targetUser = options?.selectedUser ? users.find(u => u.id === options.selectedUser) : currentUser
   
   const transactions = useMemo(() => {
-    return allCoinsData.transactions.filter(t => t.userId === targetUser?.id);
-  }, [allCoinsData, targetUser?.id]);
+    return coinsData.transactions.filter(t => t.userId === targetUser?.id);
+  }, [coinsData, targetUser?.id]);
 
   const timezone = settings.system.timezone;
   const [coinsEarnedToday, setCoinsEarnedToday] = useState(0);
   const [totalEarned, setTotalEarned] = useState(0);
   const [totalSpent, setTotalSpent] = useState(0);
   const [coinsSpentToday, setCoinsSpentToday] = useState(0);
-  const [transactionsToday, setTransactionsToday] = useState<number>(0);
   const [balance, setBalance] = useState(0);
 
   useEffect(() => {
@@ -55,7 +53,6 @@ export function useCoins(options?: { selectedUser?: string }) {
       setTotalEarned(atomTotalEarned);
       setTotalSpent(atomTotalSpent);
       setCoinsSpentToday(atomCoinsSpentToday);
-      setTransactionsToday(atomTransactionsToday);
       setBalance(loggedInUserBalance);
     } else if (targetUser?.id) {
       // If an admin is viewing another user, calculate their metrics manually
@@ -71,8 +68,6 @@ export function useCoins(options?: { selectedUser?: string }) {
       const spentToday = calculateCoinsSpentToday(transactions, timezone);
       setCoinsSpentToday(roundToInteger(spentToday));
 
-      setTransactionsToday(calculateTransactionsToday(transactions, timezone)); // This is a count
-
       const calculatedBalance = transactions.reduce((acc, t) => acc + t.amount, 0);
       setBalance(roundToInteger(calculatedBalance));
     }
@@ -85,8 +80,7 @@ export function useCoins(options?: { selectedUser?: string }) {
     atomCoinsEarnedToday,
     atomTotalEarned,
     atomTotalSpent,
-    atomCoinsSpentToday,
-    atomTransactionsToday,
+    atomCoinsSpentToday
   ]);
 
   const add = async (amount: number, description: string, note?: string) => {
@@ -187,7 +181,6 @@ export function useCoins(options?: { selectedUser?: string }) {
     coinsEarnedToday,
     totalEarned,
     totalSpent,
-    coinsSpentToday,
-    transactionsToday
+    coinsSpentToday
   }
 }
