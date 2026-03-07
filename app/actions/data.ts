@@ -16,6 +16,8 @@ import {
   UserData,
   getDefaultUsersData,
   User,
+  PublicUser,
+  PublicUserData,
   getDefaultWishlistData,
   getDefaultHabitsData,
   getDefaultCoinsData,
@@ -29,12 +31,13 @@ import { signInSchema } from '@/lib/zod';
 import _ from 'lodash';
 import { getCurrentUser } from '@/lib/server-helpers'
 import { prepareDataForHashing, generateCryptoHash } from '@/lib/utils';
+import { sanitizeUserData } from '@/lib/user-sanitizer'
+import { ALLOWED_AVATAR_EXTENSIONS, ALLOWED_AVATAR_MIME_TYPES } from '@/lib/avatar'
 
 
 
 type ResourceType = 'habit' | 'wishlist' | 'coins'
 type ActionType = 'write' | 'interact'
-
 
 async function verifyPermission(
   resource: ResourceType,
@@ -66,22 +69,28 @@ async function ensureDataDir() {
 
 // --- Backup Debug Action ---
 export async function triggerManualBackup(): Promise<{ success: boolean; message: string }> {
-  // Optional: Add extra permission check if needed for debug actions
-  // const user = await getCurrentUser();
-  // if (!user?.isAdmin) {
-  //   return { success: false, message: "Permission denied." };
-  // }
+  if (process.env.NODE_ENV !== 'development') {
+    return { success: false, message: 'Permission denied.' }
+  }
 
-  console.log("Manual backup trigger requested...");
+  const user = await getCurrentUser()
+  if (!user?.isAdmin) {
+    return { success: false, message: 'Permission denied.' }
+  }
+
+  console.log('Manual backup trigger requested...')
   try {
     // Import runBackup locally to avoid potential circular dependencies if moved
-    const { runBackup } = await import('@/lib/backup');
-    await runBackup();
-    console.log("Manual backup trigger completed successfully.");
-    return { success: true, message: "Backup process completed successfully." };
+    const { runBackup } = await import('@/lib/backup')
+    await runBackup()
+    console.log('Manual backup trigger completed successfully.')
+    return { success: true, message: 'Backup process completed successfully.' }
   } catch (error) {
-    console.error("Manual backup trigger failed:", error);
-    return { success: false, message: `Backup failed: ${error instanceof Error ? error.message : 'Unknown error'}` };
+    console.error('Manual backup trigger failed:', error)
+    return {
+      success: false,
+      message: `Backup failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    }
   }
 }
 
@@ -133,7 +142,7 @@ async function calculateServerFreshnessToken(): Promise<string | null> {
     const habits = await loadHabitsData();
     const coins = await loadCoinsData();
     const wishlist = await loadWishlistData();
-    const users = await loadUsersData();
+    const users = await loadUsersPublicData();
 
     const dataString = prepareDataForHashing(
       settings,
@@ -362,13 +371,22 @@ export async function uploadAvatar(formData: FormData): Promise<string> {
     throw new Error('File size must be less than 5MB')
   }
 
+  const mimeType = file.type.toLowerCase()
+  if (!ALLOWED_AVATAR_MIME_TYPES.has(mimeType)) {
+    throw new Error('Unsupported avatar MIME type')
+  }
+
+  const ext = path.extname(file.name).toLowerCase()
+  if (!ALLOWED_AVATAR_EXTENSIONS.has(ext)) {
+    throw new Error('Unsupported avatar file extension')
+  }
+
   // Create avatars directory if it doesn't exist
   const avatarsDir = path.join(process.cwd(), 'data', 'avatars')
   await fs.mkdir(avatarsDir, { recursive: true })
 
   // Generate unique filename
-  const ext = file.name.split('.').pop()
-  const filename = `${Date.now()}.${ext}`
+  const filename = `${Date.now()}-${uuid()}${ext}`
   const filePath = path.join(avatarsDir, filename)
 
   // Save file
@@ -389,12 +407,17 @@ export async function getChangelog(): Promise<string> {
 }
 
 // user logic
-export async function loadUsersData(): Promise<UserData> {
+async function loadUsersData(): Promise<UserData> {
   try {
     return await loadData<UserData>('auth')
   } catch {
     return getDefaultUsersData()
   }
+}
+
+export async function loadUsersPublicData(): Promise<PublicUserData> {
+  const data = await loadUsersData()
+  return sanitizeUserData(data)
 }
 
 export async function saveUsersData(data: UserData): Promise<void> {
@@ -414,7 +437,7 @@ export async function getUser(username: string, plainTextPassword?: string): Pro
   return user
 }
 
-export async function createUser(formData: FormData): Promise<User> {
+export async function createUser(formData: FormData): Promise<PublicUser> {
   const username = formData.get('username') as string;
   let password = formData.get('password') as string | undefined;
   const avatarPath = formData.get('avatarPath') as string;
@@ -451,10 +474,10 @@ export async function createUser(formData: FormData): Promise<User> {
   };
 
   await saveUsersData(newData);
-  return newUser;
+  return sanitizeUserData({ users: [newUser] }).users[0]
 }
 
-export async function updateUser(userId: string, updates: Partial<Omit<User, 'id' | 'password'>>): Promise<User> {
+export async function updateUser(userId: string, updates: Partial<Omit<User, 'id' | 'password'>>): Promise<PublicUser> {
   const data = await loadUsersData()
   const userIndex = data.users.findIndex(user => user.id === userId)
 
@@ -486,7 +509,7 @@ export async function updateUser(userId: string, updates: Partial<Omit<User, 'id
   }
 
   await saveUsersData(newData)
-  return updatedUser
+  return sanitizeUserData({ users: [updatedUser] }).users[0]
 }
 
 export async function updateUserPassword(userId: string, newPassword?: string): Promise<void> {
