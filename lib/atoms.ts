@@ -13,22 +13,16 @@ import { atomFamily, atomWithStorage } from "jotai/utils";
 import { DateTime } from "luxon";
 import {
   BrowserSettings,
-  CoinsData,
   CompletionCache,
   getDefaultCoinsData,
   getDefaultHabitsData,
+  getDefaultPublicUsersData,
   getDefaultServerSettings,
   getDefaultSettings,
-  getDefaultUsersData,
   getDefaultWishlistData,
   Habit,
-  HabitsData,
   PomodoroAtom,
-  ServerSettings,
-  Settings,
-  UserData,
-  UserId,
-  WishlistData
+  UserId
 } from "./types";
 
 export const browserSettingsAtom = atomWithStorage('browserSettings', {
@@ -37,13 +31,13 @@ export const browserSettingsAtom = atomWithStorage('browserSettings', {
   expandedWishlist: false
 } as BrowserSettings)
 
-export const usersAtom = atom(getDefaultUsersData<UserData>())
+export const usersAtom = atom(getDefaultPublicUsersData())
 export const currentUserIdAtom = atom<UserId | undefined>(undefined);
-export const settingsAtom = atom(getDefaultSettings<Settings>());
-export const habitsAtom = atom(getDefaultHabitsData<HabitsData>());
-export const coinsAtom = atom(getDefaultCoinsData<CoinsData>());
-export const wishlistAtom = atom(getDefaultWishlistData<WishlistData>());
-export const serverSettingsAtom = atom(getDefaultServerSettings<ServerSettings>());
+export const settingsAtom = atom(getDefaultSettings());
+export const habitsAtom = atom(getDefaultHabitsData());
+export const coinsAtom = atom(getDefaultCoinsData());
+export const wishlistAtom = atom(getDefaultWishlistData());
+export const serverSettingsAtom = atom(getDefaultServerSettings());
 export const userSelectAtom = atom<boolean>(false)
 export const aboutOpenAtom = atom<boolean>(false)
 

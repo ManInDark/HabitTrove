@@ -3,7 +3,7 @@
 import { signIn } from '@/app/actions/user';
 import { toast } from '@/hooks/use-toast';
 import { currentUserAtom, usersAtom } from '@/lib/atoms';
-import { SafeUser, User } from '@/lib/types';
+import { SafeUser } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Description } from '@radix-ui/react-dialog';
 import { useAtom } from 'jotai';
@@ -15,8 +15,6 @@ import UserForm from './UserForm';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 
-
-
 function UserCard({
   user,
   onSelect,
@@ -24,7 +22,7 @@ function UserCard({
   showEdit,
   isCurrentUser,
 }: {
-  user: User,
+  user: SafeUser,
   onSelect: () => void,
   onEdit: () => void,
   showEdit: boolean,
@@ -99,7 +97,7 @@ function UserSelectionView({
   onEditUser,
   onCreateUser,
 }: {
-  users: User[],
+  users: SafeUser[],
   currentUserFromHook?: SafeUser,
   onUserSelect: (userId: string) => void,
   onEditUser: (userId: string) => void,

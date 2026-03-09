@@ -27,11 +27,16 @@ export type SafeUser = SessionUser & {
   avatarPath?: string
   permissions?: Permission[]
   isAdmin?: boolean
+  hasPassword?: boolean
 }
 
 export type User = SafeUser & {
   password?: string // Optional: Allow users without passwords (e.g., initial setup)
   lastNotificationReadTimestamp?: string // UTC ISO date string
+}
+
+export type PublicUser = Omit<User, 'password'> & {
+  hasPassword: boolean
 }
 
 export type Habit = {
@@ -81,6 +86,10 @@ export interface UserData {
   users: User[]
 }
 
+export interface PublicUserData {
+  users: PublicUser[]
+}
+
 export interface HabitsData {
   habits: Habit[];
 }
@@ -98,7 +107,7 @@ export interface WishlistData {
 }
 
 // Default value functions
-export function getDefaultUsersData<UserData>(): UserData {
+export function getDefaultUsersData(): UserData {
   return {
     users: [
       {
@@ -112,23 +121,30 @@ export function getDefaultUsersData<UserData>(): UserData {
   } as UserData;
 };
 
-export function getDefaultHabitsData<HabitsData>(): HabitsData {
-  return { habits: [] } as HabitsData;
-}
+export const getDefaultPublicUsersData = (): PublicUserData => ({
+  users: getDefaultUsersData().users.map(({ password, ...user }) => ({
+    ...user,
+    hasPassword: !!password,
+  })),
+});
+
+export const getDefaultHabitsData = (): HabitsData => ({
+  habits: []
+});
 
 export function getDefaultTasksData<TasksData>(): TasksData {
   return { tasks: [] } as TasksData;
 };
 
-export function getDefaultCoinsData<CoinsData>(): CoinsData {
+export function getDefaultCoinsData(): CoinsData {
   return { balance: 0, transactions: [] } as CoinsData;
 };
 
-export function getDefaultWishlistData<WishlistData>(): WishlistData {
+export function getDefaultWishlistData(): WishlistData {
   return { items: [] } as WishlistData;
 }
 
-export function getDefaultSettings<Settings>(): Settings {
+export function getDefaultSettings(): Settings {
   return {
     ui: {
       useNumberFormatting: true,
@@ -144,12 +160,12 @@ export function getDefaultSettings<Settings>(): Settings {
   } as Settings;
 };
 
-export function getDefaultServerSettings<ServerSettings>(): ServerSettings {
+export function getDefaultServerSettings(): ServerSettings {
   return { isDemo: false } as ServerSettings;
 }
 
 // Map of data types to their default values
-export const DATA_DEFAULTS: { [key: string]: <T>() => T } = {
+export const DATA_DEFAULTS = {
   wishlist: getDefaultWishlistData,
   habits: getDefaultHabitsData,
   coins: getDefaultCoinsData,
@@ -195,7 +211,7 @@ export interface JotaiHydrateInitialValues {
   coins: CoinsData;
   habits: HabitsData;
   wishlist: WishlistData;
-  users: UserData;
+  users: PublicUserData;
   serverSettings: ServerSettings;
 }
 

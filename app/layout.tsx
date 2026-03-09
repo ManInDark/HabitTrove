@@ -9,7 +9,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { DM_Sans } from 'next/font/google'
 import { Suspense } from 'react'
-import { loadCoinsData, loadHabitsData, loadServerSettings, loadSettings, loadUsersData, loadWishlistData } from './actions/data'
+import { loadCoinsData, loadHabitsData, loadServerSettings, loadSettings, loadUsersPublicData, loadWishlistData } from './actions/data'
 import './globals.css'
 
 // Clean and contemporary
@@ -40,7 +40,7 @@ export default async function RootLayout({
     loadHabitsData(),
     loadCoinsData(),
     loadWishlistData(),
-    loadUsersData(),
+    loadUsersPublicData(),
     loadServerSettings(),
   ])
 

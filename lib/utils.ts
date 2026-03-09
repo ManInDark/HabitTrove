@@ -1,5 +1,5 @@
 import { toast } from "@/hooks/use-toast"
-import { CoinsData, CoinTransaction, Freq, Habit, HabitsData, ParsedFrequencyResult, ParsedResultType, PomodoroAtom, SafeUser, Settings, User, UserData, WishlistData } from '@/lib/types'
+import { CoinsData, CoinTransaction, Freq, Habit, HabitsData, ParsedFrequencyResult, ParsedResultType, PomodoroAtom, PublicUserData, SafeUser, Settings, User, UserData, WishlistData } from '@/lib/types'
 import * as chrono from 'chrono-node'
 import { clsx, type ClassValue } from "clsx"
 import { DateTime, DateTimeFormatOptions } from "luxon"
@@ -462,7 +462,7 @@ export function prepareDataForHashing(
   habits: HabitsData,
   coins: CoinsData,
   wishlist: WishlistData,
-  users: UserData
+  users: UserData | PublicUserData
 ): string {
   return JSON.stringify({
     settings,
