@@ -1,6 +1,5 @@
 'use client'
 
-import { FormattedNumber } from '@/components/FormattedNumber'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 
@@ -127,7 +126,7 @@ export default function CoinsManager() {
               <span className="text-2xl animate-bounce hover:animate-none cursor-default">💰</span>
               <div>
                 <div className="text-sm font-normal text-muted-foreground">{t('currentBalanceLabel')}</div>
-                <div className="text-3xl font-bold"><FormattedNumber amount={balance} settings={settings} /> {t('coinsSuffix')}</div>
+                <div className="text-3xl font-bold">{balance} {t('coinsSuffix')}</div>
               </div>
             </CardTitle>
           </CardHeader>
@@ -214,16 +213,12 @@ export default function CoinsManager() {
               {/* Top Row - Totals */}
               <div className="p-4 rounded-lg bg-green-100 dark:bg-green-900">
                 <div className="text-sm text-green-800 dark:text-green-100 mb-1">{t('totalEarnedLabel')}</div>
-                <div className="text-2xl font-bold text-green-900 dark:text-green-50">
-                  <FormattedNumber amount={totalEarned} settings={settings} /> 🪙
-                </div>
+                <div className="text-2xl font-bold text-green-900 dark:text-green-50">{totalEarned} 🪙</div>
               </div>
 
               <div className="p-4 rounded-lg bg-red-100 dark:bg-red-900">
                 <div className="text-sm text-red-800 dark:text-red-100 mb-1">{t('totalSpentLabel')}</div>
-                <div className="text-2xl font-bold text-red-900 dark:text-red-50">
-                  <FormattedNumber amount={totalSpent} settings={settings} /> 💸
-                </div>
+                <div className="text-2xl font-bold text-red-900 dark:text-red-50">{totalSpent} 💸</div>
               </div>
 
               <div className="p-4 rounded-lg bg-pink-100 dark:bg-pink-900">
@@ -236,16 +231,12 @@ export default function CoinsManager() {
               {/* Bottom Row - Today */}
               <div className="p-4 rounded-lg bg-blue-100 dark:bg-blue-900">
                 <div className="text-sm text-blue-800 dark:text-blue-100 mb-1">{t('todaysEarnedLabel')}</div>
-                <div className="text-2xl font-bold text-blue-900 dark:text-blue-50">
-                  <FormattedNumber amount={coinsEarnedToday} settings={settings} /> 🪙
-                </div>
+                <div className="text-2xl font-bold text-blue-900 dark:text-blue-50">{coinsEarnedToday} 🪙</div>
               </div>
 
               <div className="p-4 rounded-lg bg-purple-100 dark:bg-purple-900">
                 <div className="text-sm text-purple-800 dark:text-purple-100 mb-1">{t('todaysSpentLabel')}</div>
-                <div className="text-2xl font-bold text-purple-900 dark:text-purple-50">
-                  <FormattedNumber amount={coinsSpentToday} settings={settings} /> 💸
-                </div>
+                <div className="text-2xl font-bold text-purple-900 dark:text-purple-50">{coinsSpentToday} 💸</div>
               </div>
 
               <div className="p-4 rounded-lg bg-orange-100 dark:bg-orange-900">

@@ -2,7 +2,6 @@ import {
   calculateCoinsEarnedToday,
   calculateCoinsSpentToday,
   calculateTotalEarned,
-  calculateTotalSpent,
   generateCryptoHash,
   isHabitDue,
   prepareDataForHashing,
@@ -67,13 +66,6 @@ export const coinsEarnedTodayAtom = atom((get) => {
 export const totalEarnedAtom = atom((get) => {
   const coins = get(coinsAtom);
   const value = calculateTotalEarned(coins.transactions);
-  return roundToInteger(value);
-});
-
-// Derived atom for total spent
-export const totalSpentAtom = atom((get) => {
-  const coins = get(coinsAtom);
-  const value = calculateTotalSpent(coins.transactions);
   return roundToInteger(value);
 });
 

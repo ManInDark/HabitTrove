@@ -8,7 +8,6 @@ import {
   currentUserIdAtom,
   settingsAtom,
   totalEarnedAtom,
-  totalSpentAtom,
   usersAtom
 } from '@/lib/atoms';
 import { MAX_COIN_LIMIT } from '@/lib/constants';
@@ -30,7 +29,6 @@ export function useCoins(options?: { selectedUser?: string }) {
   const loggedInUserBalance = loggedInUserId ? coins.transactions.filter(transaction => transaction.userId === loggedInUserId).reduce((sum, transaction) => sum + transaction.amount, 0) : 0;
   const [atomCoinsEarnedToday] = useAtom(coinsEarnedTodayAtom);
   const [atomTotalEarned] = useAtom(totalEarnedAtom)
-  const [atomTotalSpent] = useAtom(totalSpentAtom)
   const [atomCoinsSpentToday] = useAtom(coinsSpentTodayAtom);
   const targetUser = options?.selectedUser ? users.find(u => u.id === options.selectedUser) : currentUser
   
@@ -41,7 +39,6 @@ export function useCoins(options?: { selectedUser?: string }) {
   const timezone = settings.system.timezone;
   const [coinsEarnedToday, setCoinsEarnedToday] = useState(0);
   const [totalEarned, setTotalEarned] = useState(0);
-  const [totalSpent, setTotalSpent] = useState(0);
   const [coinsSpentToday, setCoinsSpentToday] = useState(0);
   const [balance, setBalance] = useState(0);
 
@@ -51,7 +48,6 @@ export function useCoins(options?: { selectedUser?: string }) {
       // If the target user is the currently logged-in user, use the derived atom's value
       setCoinsEarnedToday(atomCoinsEarnedToday);
       setTotalEarned(atomTotalEarned);
-      setTotalSpent(atomTotalSpent);
       setCoinsSpentToday(atomCoinsSpentToday);
       setBalance(loggedInUserBalance);
     } else if (targetUser?.id) {
@@ -61,9 +57,6 @@ export function useCoins(options?: { selectedUser?: string }) {
 
       const totalEarnedVal = calculateTotalEarned(transactions);
       setTotalEarned(roundToInteger(totalEarnedVal));
-
-      const totalSpentVal = calculateTotalSpent(transactions);
-      setTotalSpent(roundToInteger(totalSpentVal));
 
       const spentToday = calculateCoinsSpentToday(transactions, timezone);
       setCoinsSpentToday(roundToInteger(spentToday));
@@ -79,7 +72,6 @@ export function useCoins(options?: { selectedUser?: string }) {
     loggedInUserBalance,
     atomCoinsEarnedToday,
     atomTotalEarned,
-    atomTotalSpent,
     atomCoinsSpentToday
   ]);
 
@@ -180,7 +172,7 @@ export function useCoins(options?: { selectedUser?: string }) {
     transactions: transactions,
     coinsEarnedToday,
     totalEarned,
-    totalSpent,
+    totalSpent: calculateTotalSpent(coins.transactions),
     coinsSpentToday
   }
 }
