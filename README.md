@@ -181,3 +181,26 @@ This project is licensed under the GNU Affero General Public License v3.0 - see 
 ## Support
 
 If you encounter any issues or have questions, please file an issue on the GitHub repository.
+
+## Issues
+
+### Missing Permissions
+
+Especially when updating from older versions, it may be that the permissions used in the newer versions have never been set. This causes numerous `missing permissions` errors to appear. The solution is to update the `auth.json` in the `data` directory for each user to include the following json:
+
+```json
+"permissions": [{
+    "habit": {
+        "write": true,
+        "interact": true
+    },
+    "wishlist": {
+        "write": true,
+        "interact": true
+    },
+    "coins": {
+        "write": true,
+        "interact": true
+    }
+}
+```
