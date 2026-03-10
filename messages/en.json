@@ -48,7 +48,8 @@
     "deleteHabitDialogTitle": "Delete Habit",
     "confirmDeleteDialogMessage": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
     "deleteButton": "Delete",
-    "overdueTooltip": "Overdue"
+    "overdueTooltip": "Overdue",
+    "emptyAll": "Nothing to do."
   },
   "HabitContextMenuItems": {
     "startPomodoro": "Start Pomodoro",

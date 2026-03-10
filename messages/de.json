@@ -48,7 +48,8 @@
     "deleteHabitDialogTitle": "Gewohnheit löschen",
     "confirmDeleteDialogMessage": "Sind Sie sicher, dass Sie \"{name}\" löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
     "deleteButton": "Löschen",
-    "overdueTooltip": "Überfällig"
+    "overdueTooltip": "Überfällig",
+    "emptyAll": "Nichts zu tun."
   },
   "HabitContextMenuItems": {
     "startPomodoro": "Pomodoro starten",

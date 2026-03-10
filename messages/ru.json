@@ -48,7 +48,8 @@
     "deleteHabitDialogTitle": "Удалить привычку",
     "confirmDeleteDialogMessage": "Вы уверены, что хотите удалить \"{name}\"? Это действие нельзя отменить.",
     "deleteButton": "Удалить",
-    "overdueTooltip": "Просрочено"
+    "overdueTooltip": "Просрочено",
+    "emptyAll": "Делать нечего."
   },
   "HabitContextMenuItems": {
     "startPomodoro": "Начать помидорку",

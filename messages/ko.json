@@ -48,7 +48,8 @@
     "deleteHabitDialogTitle": "습관 삭제",
     "confirmDeleteDialogMessage": "정말로 \"{name}\"을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
     "deleteButton": "삭제",
-    "overdueTooltip": "기한이 지남"
+    "overdueTooltip": "기한이 지남",
+    "emptyAll": "할 일이 없어요."
   },
   "HabitContextMenuItems": {
     "startPomodoro": "뽀모도로 시작",

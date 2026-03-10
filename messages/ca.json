@@ -48,7 +48,8 @@
     "deleteHabitDialogTitle": "Elimina hàbit",
     "confirmDeleteDialogMessage": "Estàs segur que vols eliminar \"{name}\"? Aquesta acció no es pot desfer.",
     "deleteButton": "Elimina",
-    "overdueTooltip": "Vençut"
+    "overdueTooltip": "Vençut",
+    "emptyAll": "Res a fer."
   },
   "HabitContextMenuItems": {
     "startPomodoro": "Inicia Pomodoro",

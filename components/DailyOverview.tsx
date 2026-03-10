@@ -18,7 +18,7 @@ import { DESKTOP_DISPLAY_ITEM_COUNT } from '@/lib/constants'
 import { Habit, WishlistItemType } from '@/lib/types'
 import { cn, d2t, getNow, getTodayInTimezone, isHabitDue, isSameDate, isTaskOverdue, t2d } from '@/lib/utils'
 import { useAtom } from 'jotai'
-import { AlertTriangle, ArrowRight, ChevronDown, ChevronUp, Circle, CircleCheck, Coins, Pin, Plus } from 'lucide-react';
+import { AlertTriangle, ArrowRight, ChevronDown, ChevronUp, Circle, CircleCheck, Coins, Pin, Plus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -409,7 +409,7 @@ export default function DailyOverview({
         <CardContent>
           <div className="space-y-6">
             {/* Tasks Section */}
-            {habits.some(habit => habit.isTask === true) && (
+            {dailyTasks.length > 0 && (
               <ItemSection
                 title={t('dailyTasksTitle')}
                 items={dailyTasks}
@@ -421,16 +421,16 @@ export default function DailyOverview({
             )}
 
             {/* Habits Section */}
-            <ItemSection
+            {dailyHabits.length > 0 && <ItemSection
               title={t('dailyHabitsTitle')}
               items={dailyHabits}
               emptyMessage={t('noHabitsDueTodayMessage')}
               isTask={false}
               viewLink="/habits"
               addNewItem={() => setModalConfig({ isOpen: true, isTask: false })}
-            />
+            />}
 
-            <div className="space-y-2">
+            {sortedWishlistItems.length > 0 && <div className="space-y-2">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold">{t('wishlistGoalsTitle')}</h3>
                 <Badge variant="secondary">
@@ -538,6 +538,10 @@ export default function DailyOverview({
                 </div>
               </div>
             </div>
+            }
+            {dailyHabits.length === 0 && dailyTasks.length === 0 && sortedWishlistItems.length === 0 && <>
+              {t("emptyAll")}
+            </>}
           </div>
         </CardContent>
       </Card>

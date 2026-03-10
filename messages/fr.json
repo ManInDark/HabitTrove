@@ -48,7 +48,8 @@
     "deleteHabitDialogTitle": "Supprimer l'habitude",
     "confirmDeleteDialogMessage": "Êtes-vous sûr de vouloir supprimer \"{name}\" ? Cette action est irréversible.",
     "deleteButton": "Supprimer",
-    "overdueTooltip": "En retard"
+    "overdueTooltip": "En retard",
+    "emptyAll": "Rien à faire."
   },
   "HabitContextMenuItems": {
     "startPomodoro": "Démarrer Pomodoro",

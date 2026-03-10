@@ -48,7 +48,8 @@
     "deleteHabitDialogTitle": "習慣を削除",
     "confirmDeleteDialogMessage": "\"{name}\"を削除してもよろしいですか？この操作は元に戻せません。",
     "deleteButton": "削除",
-    "overdueTooltip": "期限超過"
+    "overdueTooltip": "期限超過",
+    "emptyAll": "何もする事はありません。"
   },
   "HabitContextMenuItems": {
     "startPomodoro": "ポモドーロを開始",

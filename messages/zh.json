@@ -48,7 +48,8 @@
     "deleteHabitDialogTitle": "删除习惯",
     "confirmDeleteDialogMessage": "确定要删除\"{name}\"吗？此操作无法撤消。",
     "deleteButton": "删除",
-    "overdueTooltip": "逾期"
+    "overdueTooltip": "逾期",
+    "emptyAll": "无事可做。"
   },
   "HabitContextMenuItems": {
     "startPomodoro": "开始番茄钟",
