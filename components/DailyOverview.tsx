@@ -357,12 +357,8 @@ export default function DailyOverview({
   coinBalance,
 }: UpcomingItemsProps) {
   const t = useTranslations('DailyOverview');
-  const { completeHabit, undoComplete } = useHabits()
   const [settings] = useAtom(settingsAtom)
-  const [completedHabitsMap] = useAtom(completedHabitsMapAtom)
   const [browserSettings, setBrowserSettings] = useAtom(browserSettingsAtom)
-  const today = getTodayInTimezone(settings.system.timezone)
-  const todayCompletions = completedHabitsMap.get(today) || []
   const { saveHabit } = useHabits()
 
   const timezone = settings.system.timezone

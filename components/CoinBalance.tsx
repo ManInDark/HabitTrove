@@ -1,15 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { settingsAtom } from '@/lib/atoms'
-import { useAtom } from 'jotai'
-import { Coins } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import dynamic from 'next/dynamic'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Coins } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import TodayEarnedCoins from './TodayEarnedCoins';
 
-const TodayEarnedCoins = dynamic(() => import('./TodayEarnedCoins'), { ssr: false })
-
-export default function CoinBalance({ coinBalance }: { coinBalance: number }) {
+export default function CoinBalance({ coinBalance }: { coinBalance: number | undefined }) {
   const t = useTranslations('CoinBalance');
-  const [settings] = useAtom(settingsAtom)
+
   return (
     <Card>
       <CardHeader>
@@ -20,7 +16,7 @@ export default function CoinBalance({ coinBalance }: { coinBalance: number }) {
           <Coins className="h-12 w-12 text-yellow-400 mr-4" />
           <div className="flex flex-col">
             <div className="flex flex-col">
-              <span className="text-4xl font-bold">{coinBalance}</span>
+              <span className="text-4xl font-bold">{coinBalance ? coinBalance : "…"}</span>
               <div className="flex items-center gap-1">
                 <TodayEarnedCoins longFormat={true} />
               </div>
