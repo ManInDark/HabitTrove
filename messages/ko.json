@@ -322,7 +322,8 @@
     "completeButtonCount": "완료 ({completed}/{target})",
     "completeButtonCountMobile": "{completed}/{target}",
     "undoButton": "실행 취소",
-    "editButton": "수정"
+    "editButton": "수정",
+    "completionCount": "{completions}번 완료됨"
   },
   "TransactionNoteEditor": {
     "noteTooLongTitle": "메모가 너무 깁니다",
@@ -429,8 +430,6 @@
     "invalidAmountTitle": "유효하지 않은 금액",
     "invalidAmountDescription": "유효한 양의 숫자를 입력하세요",
     "successTitle": "성공",
-    "transactionNotFoundDescription": "거래를 찾을 수 없습니다",
-    "maxAmountExceededDescription": "금액은 {max}을(를) 초과할 수 없습니다.",
     "transactionNotFoundDescription": "거래를 찾을 수 없습니다",
     "maxAmountExceededDescription": "금액은 {max}을(를) 초과할 수 없습니다."
   },

@@ -322,7 +322,8 @@
     "completeButtonCount": "Выполнить ({completed}/{target})",
     "completeButtonCountMobile": "{completed}/{target}",
     "undoButton": "Отменить",
-    "editButton": "Редактировать"
+    "editButton": "Редактировать",
+    "completionCount": "завершено {completions} раз"
   },
   "TransactionNoteEditor": {
     "noteTooLongTitle": "Слишком длинная заметка",
@@ -433,8 +434,6 @@
     "invalidAmountTitle": "Неверная сумма",
     "invalidAmountDescription": "Пожалуйста, введите положительное число",
     "successTitle": "Успех",
-    "transactionNotFoundDescription": "Транзакция не найдена",
-    "maxAmountExceededDescription": "Сумма не может превышать {max}.",
     "transactionNotFoundDescription": "Транзакция не найдена",
     "maxAmountExceededDescription": "Сумма не может превышать {max}."
   },

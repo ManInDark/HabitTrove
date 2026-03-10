@@ -322,7 +322,8 @@
     "completeButtonCount": "Completar ({completed}/{target})",
     "completeButtonCountMobile": "{completed}/{target}",
     "undoButton": "Deshacer",
-    "editButton": "Editar"
+    "editButton": "Editar",
+    "completionCount": "{completions} veces completadas"
   },
   "TransactionNoteEditor": {
     "noteTooLongTitle": "Nota demasiado larga",
@@ -441,8 +442,6 @@
     "invalidAmountTitle": "Cantidad inválida",
     "invalidAmountDescription": "Por favor ingresa un número positivo válido",
     "successTitle": "Éxito",
-    "transactionNotFoundDescription": "Transacción no encontrada",
-    "maxAmountExceededDescription": "La cantidad no puede exceder {max}.",
     "transactionNotFoundDescription": "Transacción no encontrada",
     "maxAmountExceededDescription": "La cantidad no puede exceder {max}."
   }

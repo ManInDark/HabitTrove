@@ -135,6 +135,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
             <span className={`text-sm font-medium ${habit.archived ? 'text-gray-400 dark:text-gray-500' : ''}`}>{t('coinsPerCompletion', { count: habit.coinReward })}</span>
           </div>
         </div>
+        <div className='mt-2 text-sm font-medium'>{t("completionCount", { completions: habit.completions.length })}</div>
       </CardContent>
       <CardFooter className="flex-shrink-0 flex justify-between gap-2">
         <div className="flex gap-2">
