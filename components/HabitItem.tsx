@@ -7,7 +7,7 @@ import {
 import { useHabits } from '@/hooks/useHabits'
 import { currentUserAtom, settingsAtom, usersAtom } from '@/lib/atoms'
 import { Habit, User } from '@/lib/types'
-import { convertMachineReadableFrequencyToHumanReadable, getCompletionsForToday, hasPermission, isTaskOverdue } from '@/lib/utils'
+import { convertMachineReadableFrequencyToHumanReadable, getCompletionsForToday, hasPermission, isHabitDueToday, isTaskOverdue } from '@/lib/utils'
 import { useAtom } from 'jotai'
 import { Check, Coins, Edit, MoreVertical, Pin, Undo2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -140,7 +140,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
       <CardFooter className="flex-shrink-0 flex justify-between gap-2">
         <div className="flex gap-2">
           <div className="relative">
-            <Button
+            {(habit.isTask || isHabitDueToday({ habit, timezone: settings.system.timezone })) && <Button
               variant={isCompletedToday ? "secondary" : "default"}
               size="sm"
               onClick={async () => await completeHabit(habit)}
@@ -175,7 +175,7 @@ export default function HabitItem({ habit, onEdit, onDelete }: HabitItemProps) {
                   }}
                 />
               )}
-            </Button>
+            </Button>}
           </div>
           {completionsToday > 0 && !habit.archived && (
             <Button
