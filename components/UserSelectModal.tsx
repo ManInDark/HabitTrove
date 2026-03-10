@@ -128,7 +128,7 @@ export default function UserSelectModal({ onClose }: { onClose: () => void }) {
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
-  const [usersData, setUsersData] = useAtom(usersAtom);
+  const [usersData] = useAtom(usersAtom);
   const users = usersData.users;
   const [currentUser] = useAtom(currentUserAtom);
 

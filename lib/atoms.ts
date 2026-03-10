@@ -22,6 +22,7 @@ import {
   getDefaultWishlistData,
   Habit,
   PomodoroAtom,
+  User,
   UserId
 } from "./types";
 
@@ -77,6 +78,10 @@ export const currentUserAtom = atom((get) => {
   return users.users.find(user => user.id === currentUserId);
 })
 
+function removeHasPassword(users: Omit<User, 'password'>[]): Omit<User, 'password'>[] {
+  return users.map(user => { delete user.hasPassword; return user });
+}
+
 /**
  * Asynchronous atom that calculates a freshness token (hash) based on the current client-side data.
  * This token can be compared with a server-generated token to detect data discrepancies.
@@ -86,9 +91,10 @@ export const clientFreshnessTokenAtom = atom(async (get) => {
   const habits = get(habitsAtom);
   const coins = get(coinsAtom);
   const wishlist = get(wishlistAtom);
-  const users = get(usersAtom);
+  const users = structuredClone(get(usersAtom));
+  const usersWithoutHasPassword = removeHasPassword(users.users);
 
-  const dataString = prepareDataForHashing(settings, habits, coins, wishlist, users);
+  const dataString = prepareDataForHashing(settings, habits, coins, wishlist, { users: usersWithoutHasPassword });
   const hash = await generateCryptoHash(dataString);
   return hash;
 });

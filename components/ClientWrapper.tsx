@@ -10,6 +10,7 @@ import LoadingSpinner from './LoadingSpinner';
 import PomodoroTimer from './PomodoroTimer';
 import RefreshBanner from './RefreshBanner';
 import UserSelectModal from './UserSelectModal';
+import { DATA_FRESHNESS_INTERVAL } from '@/lib/constants';
 
 function ClientWrapperContent({ children }: { children: ReactNode }) {
   const [pomo] = useAtom(pomodoroAtom)
@@ -52,9 +53,7 @@ function ClientWrapperContent({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Interval for polling data freshness
     if (clientToken && !showRefreshBanner && status === 'authenticated') {
-      const intervalId = setInterval(() => {
-        performFreshnessCheck();
-      }, 30000); // Check every 30 seconds
+      const intervalId = setInterval(performFreshnessCheck, DATA_FRESHNESS_INTERVAL);
 
       return () => clearInterval(intervalId);
     }
